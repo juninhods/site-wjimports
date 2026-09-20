@@ -1,186 +1,3 @@
-/* WJ IMPORTS — catálogo + carrinho + SuperFrete */
-const products = [
-
-
-  {
-    id: 1,
-    name: "SmartWatch",
-    cat: "Dia a Dia/Esportes",
-    price: 200.90,
-    image: [
-      "imgs/relogio1.jpg",
-      "imgs/relogio2.jpg",
-      "imgs/relogio3.jpg"
-    ]
-  },
-
-  {
-    id: 2,
-    name: "SmartWatch preto",
-    cat: "Dia a Dia/Lazer",
-    price: 200.90,
-    image: [
-      "imgs/preto1.jpg",
-      "imgs/preto2.jpg",
-      "imgs/preto3.jpg"
-    ]
-  },
-
-  {
-    id: 3,
-    name: "SMARTWATCH PARA CORRIDAS",
-    cat: "ESPORTES/LAZER",
-    price: 500.00,
-    image: [
-      "imgs/redondo1.jpg",
-      "imgs/redondo2.jpg",
-      "imgs/redondo3.jpg"
-    ]
-  },
-
-  {
-    id: 4,
-    name: "Câmera IP",
-    cat: "Câmeras e Segurança",
-    price: 799.90,
-    image: [
-      "imgs/cam-ip1.jpg",
-      "imgs/cam-ip2.jpg",
-      "imgs/cam-ip3.jpg"
-    ]
-  },
-
-
-
-  {
-    id: 13,
-    name: "Perfume Importado 100ml",
-    cat: "Perfumes Importados",
-    price: 299.90,
-    image: [
-      "imgs/asad1.jpg",
-      "imgs/asad2.jpg",
-      "imgs/asad3.jpg"
-    ]
-  },
-
-  {
-    id: 14,
-    name: "Perfume Lataffa Yara 200ml",
-    cat: "Perfumes Importados",
-    price: 349.90,
-    image: [
-      "imgs/yara1.jpg",
-      "imgs/yara2.jpg",
-      "imgs/yara3.jpg"
-    ]
-  },
-
-  {
-    id: 15,
-    name: "Perfume Lataffa Eclaire 100ml",
-    cat: "Perfumes Importados",
-    price: 369.90,
-    image: [
-      "imgs/eclaire1.jpg",
-      "imgs/eclaire2.jpg",
-      "imgs/eclaire3.jpg"
-    ]
-  },
-
-  {
-    id: 16,
-    name: "Kit Casal Asad Elixir + Asad Yara",
-    cat: "Perfumes Importados",
-    price: 319.90,
-    image: [
-      "imgs/asad1.jpg",
-      "imgs/yara1.jpg",
-    ]
-  },
-
-  {
-    id: 17,
-    name: "Caixa de Som JBL",
-    cat: "Eletroeletrônicos",
-    price: 99.99,
-    image: [
-      "imgs/jbl1.jpg",
-      "imgs/jbl2.jpg",
-      "imgs/jbl3.jpg"
-    ]
-  },
-
-  {
-    id: 18,
-    name: "Power Bank 22000mha",
-    cat: "Eletroeletrônicos",
-    price: 299.99,
-    image: [
-      "imgs/bank1.jpg",
-      "imgs/bank2.jpg",
-      "imgs/bank3.jpg"
-    ]
-  },
-
-  {
-    id: 19,
-    name: "Fone de Ouvido",
-    cat: "Eletroeletrônicos",
-    price: 80.99,
-    image: [
-      "imgs/fone1.jpg",
-      "imgs/fone2.jpg"
-    ]
-  } ,
-  {
-    id: 20,
-    name: "Carregador USB-C (Iphone)",
-    cat: "Eletroeletrônicos",
-    price: 80.99,
-    image: [
-      "imgs/usbc.jpg",
-      "imgs/usbc2.jpg"
-    ]
-  } ,
-   {
-    id: 21,
-    name: "Controle PS4",
-    cat: "Eletroeletrônicos",
-    price: 80.99,
-    image: [
-      "imgs/ps4.jpg",
-      "imgs/ps42.jpg",
-      "imgs/ps43.jpg"
-    ]
-  } ,
-   {
-    id: 22,
-    name: "TV Box UNI TV",
-    cat: "Eletroeletrônicos",
-    price: 300.00,
-    image: [
-      "imgs/unitv.jpg",
-    ]
-  } ,
-  {
-    id: 23,
-    name: "Tablet Redmi Pad 2 Wi-Fi 256GB",
-    cat: "Eletroeletrônicos",
-    price: 3000.00,
-    image: [
-      "imgs/tabletxiaomi1.jpg",
-      "imgs/tabletxiaomi2.jpg",
-      "imgs/tabletxiaomi3.jpg",
-    ]
-  } ,
-
-
-  
-
-  
-
-];
 
 const SHIPPING_CONFIG = {
   apiUrl: "https://site-wjimports.onrender.com",
@@ -190,549 +7,970 @@ const SHIPPING_CONFIG = {
   defaultWeight: 0.30
 };
 
+const WHATSAPP_NUMBER = "5513996905523";
+
+// ============================================================
+// PRODUTOS
+// ============================================================
+
+const products = [
+  {
+    id: 1,
+    name: "Perfume Yara",
+    category: "Perfumes",
+    price: 129.90,
+    image: "images/yara.jpg"
+  },
+  {
+    id: 2,
+    name: "Perfume Asad",
+    category: "Perfumes",
+    price: 149.90,
+    image: "images/asad.jpg"
+  },
+  {
+    id: 3,
+    name: "Perfume Khamrah",
+    category: "Perfumes",
+    price: 159.90,
+    image: "images/khamrah.jpg"
+  },
+  {
+    id: 4,
+    name: "Perfume Fakhar",
+    category: "Perfumes",
+    price: 139.90,
+    image: "images/fakhar.jpg"
+  },
+  {
+    id: 13,
+    name: "Kit Perfume 01",
+    category: "Kits",
+    price: 199.90,
+    image: "images/kit1.jpg"
+  },
+  {
+    id: 14,
+    name: "Kit Perfume 02",
+    category: "Kits",
+    price: 219.90,
+    image: "images/kit2.jpg"
+  },
+  {
+    id: 15,
+    name: "Kit Perfume 03",
+    category: "Kits",
+    price: 229.90,
+    image: "images/kit3.jpg"
+  },
+  {
+    id: 16,
+    name: "Produto Importado 01",
+    category: "Importados",
+    price: 99.90,
+    image: "images/produto1.jpg"
+  },
+  {
+    id: 17,
+    name: "Produto Importado 02",
+    category: "Importados",
+    price: 109.90,
+    image: "images/produto2.jpg"
+  },
+  {
+    id: 18,
+    name: "Produto Importado 03",
+    category: "Importados",
+    price: 119.90,
+    image: "images/produto3.jpg"
+  },
+  {
+    id: 19,
+    name: "Produto Importado 04",
+    category: "Importados",
+    price: 129.90,
+    image: "images/produto4.jpg"
+  },
+  {
+    id: 20,
+    name: "Produto Importado 05",
+    category: "Importados",
+    price: 139.90,
+    image: "images/produto5.jpg"
+  },
+  {
+    id: 21,
+    name: "Produto Importado 06",
+    category: "Importados",
+    price: 149.90,
+    image: "images/produto6.jpg"
+  },
+  {
+    id: 22,
+    name: "Produto Importado 07",
+    category: "Importados",
+    price: 159.90,
+    image: "images/produto7.jpg"
+  },
+  {
+    id: 23,
+    name: "Produto Importado 08",
+    category: "Importados",
+    price: 169.90,
+    image: "images/produto8.jpg"
+  }
+];
+
+// ============================================================
+// ESTADO
+// ============================================================
+
+let cart = [];
 let currentShippingRates = [];
 let selectedShipping = null;
+let modalImages = [];
+let currentModalImageIndex = 0;
 
-const cats = [...new Set(products.map(p => p.cat))];
-const categoryGrid = document.getElementById("categoryGrid");
-const categoryFilter = document.getElementById("categoryFilter");
+// ============================================================
+// UTILITÁRIOS
+// ============================================================
 
-categoryGrid.innerHTML = cats.map((cat, index) => `
-  <button class="category" type="button" onclick="setCategory(${JSON.stringify(cat)})">
-    <span class="category-number">${String(index + 1).padStart(2, "0")}</span>
-    <div><h3>${escapeHtml(cat)}</h3><p>${products.filter(p => p.cat === cat).length} produto(s)</p></div>
-    <span class="category-arrow">→</span>
-  </button>
-`).join("");
-
-categoryFilter.innerHTML += cats.map(cat =>
-  `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`
-).join("");
-
-function money(value) {
-  return Number(value || 0).toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
+function formatMoney(value) {
+  return Number(value || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
 }
+
 function escapeHtml(value) {
-  return String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  return String(value ?? "")
+    .replace(/&/g, "&amp")
+    .replace(/</g, "&lt")
+    .replace(/>/g, "&gt")
+    .replace(/"/g, "&quot")
+    .replace(/'/g, "&#039");
 }
-function setCategory(category) {
-  categoryFilter.value = category;
-  document.getElementById("produtos").scrollIntoView({behavior:"smooth"});
-  renderProducts();
+
+function normalizeCep(value) {
+  return String(value || "").replace(/\D/g, "").slice(0, 8);
 }
-function changeImage(productId, direction) {
-  const product = products.find(item => item.id === productId);
-  if (!product || !product.image?.length) return;
-  product.currentImage = product.currentImage ?? 0;
-  product.currentImage += direction;
-  if (product.currentImage < 0) product.currentImage = product.image.length - 1;
-  if (product.currentImage >= product.image.length) product.currentImage = 0;
-  const image = document.getElementById(`product-image-${productId}`);
-  const counter = document.getElementById(`image-counter-${productId}`);
-  if (image) image.src = product.image[product.currentImage];
-  if (counter) counter.textContent = `${product.currentImage + 1}/${product.image.length}`;
+
+function formatCep(value) {
+  const cep = normalizeCep(value);
+  if (cep.length <= 5) {
+    return cep;
+  }
+  return cep.slice(0, 5) + "-" + cep.slice(5);
 }
-function openImage(productId) {
-  const product = products.find(item => item.id === productId);
-  if (!product) return;
-  modalProductId = productId;
-  modalImageIndex = product.currentImage || 0;
-  updateModalImage();
-  document.getElementById("imageModal").style.display = "flex";
-  document.body.style.overflow = "hidden";
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(showToast.timeout);
+  showToast.timeout = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
 }
-function updateModalImage() {
-  const product = products.find(item => item.id === modalProductId);
-  if (!product) return;
-  document.getElementById("modalImage").src = product.image[modalImageIndex];
-  document.getElementById("modalImage").alt = product.name;
-  document.getElementById("modalImageCounter").textContent = `${modalImageIndex + 1}/${product.image.length}`;
+
+// ============================================================
+// CATEGORIAS
+// ============================================================
+
+function renderCategories() {
+  const grid = document.getElementById("categoryGrid");
+  const filter = document.getElementById("categoryFilter");
+  if (!grid || !filter) return;
+
+  const categories = [...new Set(products.map(product => product.category))];
+
+  grid.innerHTML = "";
+  filter.innerHTML = `<option value="Todos">Todas</option>`;
+
+  categories.forEach(category => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "category-card";
+    button.innerHTML = `
+      <strong>${escapeHtml(category)}</strong>
+      <span>${products.filter(p => p.category === category).length} produtos</span>
+    `;
+    button.addEventListener("click", () => {
+      filter.value = category;
+      renderProducts();
+      document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth" });
+    });
+    grid.appendChild(button);
+
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    filter.appendChild(option);
+  });
 }
-function changeModalImage(direction, event) {
-  event?.stopPropagation();
-  const product = products.find(item => item.id === modalProductId);
-  if (!product) return;
-  modalImageIndex += direction;
-  if (modalImageIndex < 0) modalImageIndex = product.image.length - 1;
-  if (modalImageIndex >= product.image.length) modalImageIndex = 0;
-  product.currentImage = modalImageIndex;
-  updateModalImage();
-  const image = document.getElementById(`product-image-${product.id}`);
-  const counter = document.getElementById(`image-counter-${product.id}`);
-  if (image) image.src = product.image[modalImageIndex];
-  if (counter) counter.textContent = `${modalImageIndex + 1}/${product.image.length}`;
-}
-function closeImage(event) {
-  if (event && event.target !== event.currentTarget && !event.target.classList.contains("close-image")) return;
-  document.getElementById("imageModal").style.display = "none";
-  document.body.style.overflow = "";
-  modalProductId = null;
-  modalImageIndex = 0;
-}
-document.addEventListener("keydown", event => {
-  const modal = document.getElementById("imageModal");
-  if (modal.style.display !== "flex") return;
-  if (event.key === "Escape") closeImage();
-  if (event.key === "ArrowLeft") changeModalImage(-1);
-  if (event.key === "ArrowRight") changeModalImage(1);
-});
+
+// ============================================================
+// PRODUTOS
+// ============================================================
 
 function renderProducts() {
-  const search = document.getElementById("search").value.trim().toLowerCase();
-  const category = categoryFilter.value;
-  const sort = document.getElementById("sort").value;
-  let list = products.filter(product =>
-    (category === "Todos" || product.cat === category) &&
-    product.name.toLowerCase().includes(search)
-  );
-  if (sort === "low") list.sort((a,b) => a.price - b.price);
-  if (sort === "high") list.sort((a,b) => b.price - a.price);
-  if (sort === "name") list.sort((a,b) => a.name.localeCompare(b.name,"pt-BR"));
-  document.getElementById("resultText").textContent = `${list.length} produto(s) encontrado(s).`;
+  const grid = document.getElementById("productGrid");
+  const search = document.getElementById("search");
+  const categoryFilter = document.getElementById("categoryFilter");
+  const sort = document.getElementById("sort");
+  const resultText = document.getElementById("resultText");
 
-  document.getElementById("productGrid").innerHTML = list.map(product => {
-    product.currentImage = product.currentImage ?? 0;
-    const hasMultiple = product.image.length > 1;
-    return `
-      <article class="product">
-        <div class="product-img">
-          <span class="product-badge">${escapeHtml(product.cat)}</span>
-          <img id="product-image-${product.id}" src="${product.image[product.currentImage]}" alt="${escapeHtml(product.name)}" loading="lazy" onclick="openImage(${product.id})">
-          ${hasMultiple ? `
-            <button class="image-arrow image-arrow-left" type="button" onclick="changeImage(${product.id},-1)" aria-label="Imagem anterior">‹</button>
-            <button class="image-arrow image-arrow-right" type="button" onclick="changeImage(${product.id},1)" aria-label="Próxima imagem">›</button>
-            <div class="image-counter" id="image-counter-${product.id}">${product.currentImage + 1}/${product.image.length}</div>
-          ` : ""}
-        </div>
-        <div class="product-body">
-          <h3>${escapeHtml(product.name)}</h3>
-          <div class="price">${money(product.price)}</div>
-          <div class="stock"><span></span> Disponível</div>
-          <button type="button" onclick="addToCart(${product.id})">Adicionar ao carrinho</button>
-        </div>
-      </article>
+  if (!grid) return;
+
+  const searchValue = search?.value?.trim().toLowerCase() || "";
+  const categoryValue = categoryFilter?.value || "Todos";
+  const sortValue = sort?.value || "default";
+
+  let filtered = products.filter(product => {
+    const matchesSearch =
+      !searchValue ||
+      product.name.toLowerCase().includes(searchValue) ||
+      product.category.toLowerCase().includes(searchValue);
+    const matchesCategory =
+      categoryValue === "Todos" || product.category === categoryValue;
+    return matchesSearch && matchesCategory;
+  });
+
+  if (sortValue === "low") {
+    filtered.sort((a, b) => a.price - b.price);
+  } else if (sortValue === "high") {
+    filtered.sort((a, b) => b.price - a.price);
+  } else if (sortValue === "name") {
+    filtered.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+  }
+
+  grid.innerHTML = "";
+
+  filtered.forEach(product => {
+    const card = document.createElement("article");
+    card.className = "product-card";
+    card.innerHTML = `
+      <div class="product-image-wrap" onclick="openProductImage(${product.id})">
+        <img class="product-image" src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.style.display='none'">
+      </div>
+      <div class="product-info">
+        <small>${escapeHtml(product.category)}</small>
+        <h3>${escapeHtml(product.name)}</h3>
+        <strong class="product-price">${formatMoney(product.price)}</strong>
+        <button class="btn primary full" type="button" onclick="addToCart(${product.id})">
+          Adicionar ao carrinho
+        </button>
+      </div>
     `;
-  }).join("") || `<div class="empty-products"><h3>Nenhum produto encontrado.</h3><p>Tente outro termo ou categoria.</p></div>`;
+    grid.appendChild(card);
+  });
+
+  if (resultText) {
+    resultText.textContent =
+      filtered.length === 1
+        ? "1 produto encontrado."
+        : `${filtered.length} produtos encontrados.`;
+  }
 }
 
-function addToCart(id) {
-  const product = products.find(item => item.id === id);
+// ============================================================
+// CARRINHO
+// ============================================================
+
+function addToCart(productId) {
+  const product = products.find(item => item.id === productId);
   if (!product) return;
-  cart.push({id:product.id, name:product.name, price:product.price});
-  saveCart();
-  toast("Produto adicionado ao carrinho!");
+
+  const existing = cart.find(item => item.id === productId);
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({ ...product, quantity: 1 });
+  }
+
+  updateCart();
+  showToast("Produto adicionado ao carrinho.");
 }
-function saveCart() {
-  localStorage.setItem("wjCart", JSON.stringify(cart));
-  document.getElementById("cartCount").textContent = cart.length;
+
+function removeFromCart(productId) {
+  cart = cart.filter(item => item.id !== productId);
+  updateCart();
 }
-function openCart() { document.getElementById("cartModal").style.display = "block"; renderCart(); }
-function closeCart() { document.getElementById("cartModal").style.display = "none"; }
-function renderCart() {
-  const box = document.getElementById("cartItems");
-  if (!cart.length) {
-    box.innerHTML = `<div class="cart-empty"><strong>Seu carrinho está vazio.</strong><p>Adicione um produto para continuar.</p></div>`;
-    document.getElementById("cartTotal").textContent = money(0);
+
+function changeCartQuantity(productId, change) {
+  const item = cart.find(product => product.id === productId);
+  if (!item) return;
+
+  item.quantity += change;
+  if (item.quantity <= 0) {
+    removeFromCart(productId);
     return;
   }
-  box.innerHTML = cart.map((product,index) => `
-    <div class="cart-item"><div><strong>${escapeHtml(product.name)}</strong><small>${money(product.price)}</small></div><button type="button" onclick="removeItem(${index})">Remover</button></div>
-  `).join("");
-  document.getElementById("cartTotal").textContent = money(cart.reduce((sum,p) => sum + Number(p.price || 0),0));
+  updateCart();
 }
-function removeItem(index) { cart.splice(index,1); saveCart(); renderCart(); }
-function checkout() {
+
+function getCartSubtotal() {
+  return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+}
+
+function updateCart() {
+  const cartCount = document.getElementById("cartCount");
+  const cartItems = document.getElementById("cartItems");
+  const cartTotal = document.getElementById("cartTotal");
+
+  const quantity = cart.reduce((total, item) => total + item.quantity, 0);
+
+  if (cartCount) {
+    cartCount.textContent = quantity;
+  }
+
+  if (cartTotal) {
+    cartTotal.textContent = formatMoney(getCartSubtotal());
+  }
+
+  if (!cartItems) return;
+
   if (!cart.length) {
-    return toast("Seu carrinho está vazio.");
+    cartItems.innerHTML = `
+      <div class="empty-cart">
+        <p>Seu carrinho está vazio.</p>
+      </div>
+    `;
+    return;
   }
 
-  if (!selectedShipping) {
-    return toast("Selecione uma opção de entrega.");
-  }
-
-  const total = cart.reduce(
-    (sum, p) => sum + Number(p.price || 0),
-    0
-  );
-
-  let shippingText = "";
-
-  if (selectedShipping.type === "combine") {
-    shippingText = "Combinar entrega — consultar disponibilidade";
-  } else {
-    shippingText =
-      `${selectedShipping.name} — ${money(selectedShipping.price)}` +
-      (selectedShipping.deliveryTime
-        ? ` — ${selectedShipping.deliveryTime} dia(s) útil(eis)`
-        : "");
-  }
-
-  const text = [
-    "Olá, WJ Imports! Quero fazer um pedido:",
-    "",
-    ...cart.map(
-      p => `• ${p.name} — ${money(p.price)}`
-    ),
-    "",
-    `Total dos produtos: ${money(total)}`,
-    "",
-    `Forma de entrega: ${shippingText}`
-  ].join("\n");
-
-  window.open(
-    "https://wa.me/5513996905523?text=" +
-    encodeURIComponent(text),
-    "_blank"
-  );
+  cartItems.innerHTML = cart
+    .map(
+      item => `
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <strong>${escapeHtml(item.name)}</strong>
+        <span>${formatMoney(item.price)}</span>
+      </div>
+      <div class="cart-item-actions">
+        <button type="button" onclick="changeCartQuantity(${item.id}, -1)">−</button>
+        <span>${item.quantity}</span>
+        <button type="button" onclick="changeCartQuantity(${item.id}, 1)">+</button>
+        <button type="button" onclick="removeFromCart(${item.id})" aria-label="Remover produto">×</button>
+      </div>
+    </div>
+  `
+    )
+    .join("");
 }
 
-async function calculateShipping(event) {
-  event.preventDefault();
+function openCart() {
+  const modal = document.getElementById("cartModal");
+  if (!modal) return;
+  modal.classList.add("open");
+  updateCart();
+}
 
-  const input = document.getElementById("cep");
-  const result = document.getElementById("shippingResult");
-  const button = document.getElementById("shippingButton");
+function closeCart() {
+  const modal = document.getElementById("cartModal");
+  if (!modal) return;
+  modal.classList.remove("open");
+}
 
-  const cep = input.value.replace(/\D/g, "");
+// ============================================================
+// IMAGENS
+// ============================================================
 
-  if (cep.length !== 8) {
-    return toast("Digite um CEP válido.");
+function openProductImage(productId) {
+  const product = products.find(item => item.id === productId);
+  if (!product) return;
+
+  modalImages = [product.image];
+  currentModalImageIndex = 0;
+
+  const modal = document.getElementById("imageModal");
+  const image = document.getElementById("modalImage");
+  const counter = document.getElementById("modalImageCounter");
+
+  if (!modal || !image) return;
+
+  image.src = product.image;
+  image.alt = product.name;
+
+  if (counter) {
+    counter.textContent = "1/1";
   }
 
-  const qty = Math.max(
-    1,
-    Number(
-      document.getElementById("shippingQty").value || 1
-    )
-  );
+  modal.classList.add("open");
+}
 
-  const weight = Math.max(
-    0.1,
-    Number(
-      document.getElementById("shippingWeight").value ||
-      SHIPPING_CONFIG.defaultWeight
-    )
-  );
+function closeImage(event) {
+  if (
+    event &&
+    event.target &&
+    !event.target.classList.contains("image-modal") &&
+    !event.target.classList.contains("close-image")
+  ) {
+    return;
+  }
+  const modal = document.getElementById("imageModal");
+  if (!modal) return;
+  modal.classList.remove("open");
+}
 
-  button.disabled = true;
-  button.textContent = "Calculando...";
+function changeModalImage(direction, event) {
+  if (event) {
+    event.stopPropagation();
+  }
+  if (modalImages.length <= 1) return;
 
-  selectedShipping = null;
-  currentShippingRates = [];
+  currentModalImageIndex += direction;
+  if (currentModalImageIndex < 0) {
+    currentModalImageIndex = modalImages.length - 1;
+  }
+  if (currentModalImageIndex >= modalImages.length) {
+    currentModalImageIndex = 0;
+  }
 
-  result.innerHTML = `
-    <div class="shipping-loading">
-      <span></span>
-      <p>Consultando opções de envio...</p>
-    </div>
-  `;
+  const image = document.getElementById("modalImage");
+  const counter = document.getElementById("modalImageCounter");
+
+  if (image) {
+    image.src = modalImages[currentModalImageIndex];
+  }
+  if (counter) {
+    counter.textContent = `${currentModalImageIndex + 1}/${modalImages.length}`;
+  }
+}
+
+// ============================================================
+// VIA CEP
+// ============================================================
+
+async function lookupCep() {
+  const cepInput = document.getElementById("cep");
+  const status = document.getElementById("addressStatus");
+  if (!cepInput) return;
+
+  const cep = normalizeCep(cepInput.value);
+  if (cep.length !== 8) {
+    return;
+  }
+
+  if (status) {
+    status.textContent = "Consultando endereço...";
+    status.className = "address-status loading";
+  }
 
   try {
-    const response = await fetch(
-      `${SHIPPING_CONFIG.apiUrl}/api/frete`,
-      {
-        method: "POST",
+    const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    if (!response.ok) {
+      throw new Error("Não foi possível consultar o CEP.");
+    }
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+    const data = await response.json();
+    if (data.erro) {
+      throw new Error("CEP não encontrado.");
+    }
 
-        body: JSON.stringify({
-          cep,
-          quantity: qty,
-          weight,
-          height: SHIPPING_CONFIG.height,
-          width: SHIPPING_CONFIG.width,
-          length: SHIPPING_CONFIG.length
-        })
-      }
-    );
+    const street = document.getElementById("addressStreet");
+    const neighborhood = document.getElementById("addressNeighborhood");
+    const city = document.getElementById("addressCity");
+    const state = document.getElementById("addressState");
+
+    if (street) street.value = data.logradouro || "";
+    if (neighborhood) neighborhood.value = data.bairro || "";
+    if (city) city.value = data.localidade || "";
+    if (state) state.value = (data.uf || "").toUpperCase();
+
+    if (status) {
+      status.textContent =
+        "✓ Endereço localizado. Você pode editar os campos se necessário.";
+      status.className = "address-status success";
+    }
+  } catch (error) {
+    console.error(error);
+    if (status) {
+      status.textContent =
+        error.message || "Não foi possível localizar o endereço.";
+      status.className = "address-status error";
+    }
+  }
+}
+
+// ============================================================
+// FRETE — NOMES DAS TRANSPORTADORAS
+// ============================================================
+
+function getCarrierName(rate) {
+  const text = [
+    rate.name,
+    rate.company,
+    rate.carrier,
+    rate.service,
+    rate.serviceName,
+    rate.description,
+    rate.label
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  if (text.includes("sedex")) {
+    return "SEDEX";
+  }
+  if (
+    text.includes("pac") ||
+    text.includes("econômico") ||
+    text.includes("economico")
+  ) {
+    return "PAC";
+  }
+  if (text.includes("jadlog")) {
+    return "Jadlog";
+  }
+  if (
+    text.includes("j&t") ||
+    text.includes("j & t") ||
+    text.includes("jnt") ||
+    text.includes("j and t")
+  ) {
+    return "J&T Express";
+  }
+  if (text.includes("loggi")) {
+    return "Loggi";
+  }
+
+  return rate.name || rate.service || rate.company || "Transportadora";
+}
+
+// ============================================================
+// NORMALIZAR RESULTADO SUPERFRETE
+// ============================================================
+
+function normalizeShippingRate(rate) {
+  if (!rate || typeof rate !== "object") {
+    return null;
+  }
+
+  const priceRaw =
+    rate.price ?? rate.amount ?? rate.value ?? rate.total ?? rate.cost ?? rate.valor;
+  const price = Number(
+    String(priceRaw ?? "")
+      .replace(",", ".")
+      .replace(/[^\d.-]/g, "")
+  );
+
+  const deliveryTime =
+    rate.deliveryTime ??
+    rate.delivery_time ??
+    rate.deadline ??
+    rate.delivery_days ??
+    rate.days ??
+    rate.prazo ??
+    rate.delivery;
+
+  if (!Number.isFinite(price) || price <= 0) {
+    return null;
+  }
+
+  return {
+    id:
+      rate.id ??
+      rate.serviceId ??
+      rate.service_id ??
+      rate.code ??
+      rate.codigo ??
+      Math.random().toString(36).slice(2),
+    name: getCarrierName(rate),
+    price: price,
+    deliveryTime:
+      deliveryTime != null
+        ? String(deliveryTime)
+        : "Prazo informado pela transportadora"
+  };
+}
+
+// ============================================================
+// EXTRAIR FRETES DA RESPOSTA
+// ============================================================
+
+function extractShippingRates(data) {
+  if (!data) {
+    return [];
+  }
+  if (Array.isArray(data)) {
+    return data;
+  }
+  if (Array.isArray(data.rates)) {
+    return data.rates;
+  }
+  if (Array.isArray(data.services)) {
+    return data.services;
+  }
+  if (Array.isArray(data.data)) {
+    return data.data;
+  }
+  if (data.data && Array.isArray(data.data.rates)) {
+    return data.data.rates;
+  }
+  if (data.data && Array.isArray(data.data.services)) {
+    return data.data.services;
+  }
+  return [];
+}
+
+// ============================================================
+// CALCULANDO O FRETE
+// ============================================================
+
+async function calculateShipping(event) {
+  if (event) {
+    event.preventDefault();
+  }
+
+  const cepInput = document.getElementById("cep");
+  const button = document.getElementById("shippingButton");
+  const result = document.getElementById("shippingResult");
+  const quantityInput = document.getElementById("shippingQty");
+  const weightInput = document.getElementById("shippingWeight");
+
+  const cep = normalizeCep(cepInput?.value);
+  if (cep.length !== 8) {
+    showToast("Digite um CEP válido.");
+    return;
+  }
+
+  const quantity = Number(quantityInput?.value || 1);
+  const weight = Number(weightInput?.value || SHIPPING_CONFIG.defaultWeight);
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Calculando...";
+  }
+
+  if (result) {
+    result.innerHTML = `
+      <div class="shipping-empty">
+        <div>
+          <strong>Calculando frete...</strong>
+          <p>Consultando as opções disponíveis.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  selectedShipping = null;
+
+  try {
+    const response = await fetch(`${SHIPPING_CONFIG.apiUrl}/api/frete`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        cep: cep,
+        destinationCep: cep,
+        quantity: quantity,
+        weight: weight,
+        height: SHIPPING_CONFIG.height,
+        width: SHIPPING_CONFIG.width,
+        length: SHIPPING_CONFIG.length
+      })
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        data.error ||
-        "Não foi possível calcular o frete."
+        data?.error || data?.message || "Não foi possível calcular o frete."
       );
     }
 
-    const rates = Array.isArray(data.rates)
-      ? data.rates
-      : [];
+    const rawRates = extractShippingRates(data);
+    currentShippingRates = rawRates.map(normalizeShippingRate).filter(Boolean);
 
-    currentShippingRates = rates;
-
-    /*
-      Identifica o nome da transportadora/serviço.
-      A SuperFrete pode retornar nomes diferentes
-      dependendo da cotação.
-    */
-    function getCarrierName(rate) {
-      const text = String(
-        rate.name ||
-        rate.service ||
-        ""
-      ).toLowerCase();
-
-      if (
-        text.includes("sedex")
-      ) {
-        return "SEDEX";
+    // Remove duplicados
+    const uniqueRates = [];
+    const seen = new Set();
+    currentShippingRates.forEach(rate => {
+      const key = `${rate.name}-${rate.price}-${rate.deliveryTime}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueRates.push(rate);
       }
+    });
+    currentShippingRates = uniqueRates;
 
-      if (
-        text.includes("pac")
-      ) {
-        return "PAC";
-      }
-
-      if (
-        text.includes("jadlog")
-      ) {
-        return "Jadlog";
-      }
-
-      if (
-        text.includes("j&t") ||
-        text.includes("j&t express") ||
-        text.includes("jet")
-      ) {
-        return "J&T Express";
-      }
-
-      if (
-        text.includes("loggi")
-      ) {
-        return "Loggi";
-      }
-
-      return rate.name || "Envio";
-    }
-
-    if (!rates.length) {
+    renderShippingOptions();
+  } catch (error) {
+    console.error("Erro ao calcular frete:", error);
+    if (result) {
       result.innerHTML = `
-        <div class="shipping-empty">
-          <strong>Nenhuma opção calculada.</strong>
-          <p>
-            Não encontramos uma cotação automática
-            para este CEP.
-          </p>
-
-          <label class="shipping-option shipping-combine">
-            <input
-              type="radio"
-              name="shippingOption"
-              onchange="selectCombineDelivery()"
-            >
-
-            <div>
-              <strong>Combinar entrega</strong>
-              <span>
-                Consulte as opções disponíveis pelo WhatsApp.
-              </span>
-            </div>
-
-            <strong class="shipping-price">
-              Consultar
-            </strong>
-          </label>
+        <div class="shipping-empty shipping-error">
+          <div>
+            <strong>Não foi possível calcular o frete</strong>
+            <p>${escapeHtml(error.message || "Verifique o CEP e tente novamente.")}</p>
+          </div>
         </div>
       `;
-
-      return;
     }
-
-    result.innerHTML = `
-      <div class="shipping-results-head">
-        <div>
-          <span class="eyebrow">
-            OPÇÕES DE ENVIO
-          </span>
-
-          <h3>
-            Para ${formatCep(cep)}
-          </h3>
-        </div>
-
-        <small>
-          Cotação real
-        </small>
-      </div>
-
-      <div class="shipping-options">
-
-        ${rates.map((rate, index) => {
-
-          const carrier = getCarrierName(rate);
-
-          return `
-            <label class="shipping-option">
-              
-              <input
-                type="radio"
-                name="shippingOption"
-                onchange="selectShippingOption(${index})"
-              >
-
-              <div>
-                <strong>
-                  ${escapeHtml(carrier)}
-                </strong>
-
-                <span>
-                  ${formatDelivery(rate)}
-                </span>
-              </div>
-
-              <strong class="shipping-price">
-                ${money(rate.price)}
-              </strong>
-
-            </label>
-          `;
-
-        }).join("")}
-
-        <label class="shipping-option shipping-combine">
-
-          <input
-            type="radio"
-            name="shippingOption"
-            onchange="selectCombineDelivery()"
-          >
-
-          <div>
-            <strong>
-              Combinar entrega
-            </strong>
-
-            <span>
-              Consulte outras opções pelo WhatsApp.
-            </span>
-          </div>
-
-          <strong class="shipping-price">
-            Consultar
-          </strong>
-
-        </label>
-
-      </div>
-
-      <div class="shipping-selected" id="shippingSelected">
-        Selecione uma opção de entrega acima.
-      </div>
-    `;
-
-  } catch (error) {
-
-    console.error(error);
-
-    result.innerHTML = `
-      <div class="shipping-error">
-
-        <strong>
-          Não foi possível calcular agora.
-        </strong>
-
-        <p>
-          ${escapeHtml(error.message)}
-        </p>
-
-        <small>
-          Tente novamente em alguns instantes.
-        </small>
-
-      </div>
-    `;
-
   } finally {
-
-    button.disabled = false;
-    button.textContent = "Calcular frete";
-
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Calcular frete";
+    }
   }
 }
+
+// ============================================================
+// RENDERIZAR OPÇÕES DE FRETE
+// ============================================================
+
+function renderShippingOptions() {
+  const result = document.getElementById("shippingResult");
+  if (!result) return;
+
+  if (!currentShippingRates.length) {
+    result.innerHTML = `
+      <div class="shipping-empty">
+        <div>
+          <strong>Nenhuma opção de frete encontrada</strong>
+          <p>O SuperFrete não retornou opções disponíveis para este CEP.</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  let html = `
+    <div class="shipping-options">
+      <div class="shipping-options-title">
+        <strong>Escolha a forma de entrega</strong>
+        <span>Selecione uma opção</span>
+      </div>
+  `;
+
+  currentShippingRates.forEach((rate, index) => {
+    const inputId = `shipping-${index}`;
+    html += `
+      <label class="shipping-option" for="${inputId}">
+        <input type="radio" id="${inputId}" name="shippingOption" value="${escapeHtml(String(rate.id))}" onchange="selectShippingOption(${index})">
+        <span class="shipping-radio"></span>
+        <span class="shipping-option-content">
+          <strong>${escapeHtml(rate.name)}</strong>
+          <small>Prazo: ${escapeHtml(rate.deliveryTime)}</small>
+        </span>
+        <span class="shipping-option-price">${formatMoney(rate.price)}</span>
+      </label>
+    `;
+  });
+
+  // Sempre disponibiliza combinar entrega
+  html += `
+    <label class="shipping-option shipping-combine" for="shipping-combine">
+      <input type="radio" id="shipping-combine" name="shippingOption" value="combine" onchange="selectCombineDelivery()">
+      <span class="shipping-radio"></span>
+      <span class="shipping-option-content">
+        <strong>Combinar entrega</strong>
+        <small>Combine a forma de entrega diretamente com a loja.</small>
+      </span>
+      <span class="shipping-option-price">A combinar</span>
+    </label>
+  `;
+
+  html += `</div>`;
+  result.innerHTML = html;
+}
+
+// ============================================================
+// SELECIONAR FRETE
+// ============================================================
 
 function selectShippingOption(index) {
   const rate = currentShippingRates[index];
-
   if (!rate) return;
-
-  const name = rate.name || "Envio";
 
   selectedShipping = {
     type: "shipping",
-    name,
-    price: Number(rate.price || 0),
-    deliveryTime:
-      rate.deliveryTime ??
-      rate.delivery_time ??
-      rate.deadline ??
-      rate.deliveryDays ??
-      null
+    id: rate.id,
+    name: rate.name,
+    price: rate.price,
+    deliveryTime: rate.deliveryTime
   };
-
-  const selected = document.getElementById(
-    "shippingSelected"
-  );
-
-  if (selected) {
-    selected.innerHTML = `
-      <strong>
-        Entrega selecionada:
-      </strong>
-
-      ${escapeHtml(name)}
-      — ${money(selectedShipping.price)}
-    `;
-  }
+  updateSelectedShipping();
 }
 
+// ============================================================
+// COMBINAR ENTREGA
+// ============================================================
 
 function selectCombineDelivery() {
-
   selectedShipping = {
     type: "combine",
+    id: "combine",
     name: "Combinar entrega",
     price: 0,
-    deliveryTime: null
+    deliveryTime: "A combinar"
   };
+  updateSelectedShipping();
+}
 
-  const selected = document.getElementById(
-    "shippingSelected"
-  );
+// ============================================================
+// ATUALIZAR VISUAL DA OPÇÃO SELECIONADA
+// ============================================================
 
-  if (selected) {
-    selected.innerHTML = `
-      <strong>
-        Entrega selecionada:
-      </strong>
+function updateSelectedShipping() {
+  document.querySelectorAll(".shipping-option").forEach(option => {
+    const radio = option.querySelector('input[type="radio"]');
+    option.classList.toggle("selected", Boolean(radio?.checked));
+  });
+}
 
-      Combinar entrega
-      — consulte pelo WhatsApp
-    `;
+// ============================================================
+// CHECKOUT WHATSAPP
+// ============================================================
+
+function checkout() {
+  if (!cart.length) {
+    showToast("Adicione pelo menos um produto ao carrinho.");
+    return;
   }
+
+  if (!selectedShipping) {
+    showToast("Selecione uma opção de frete antes de finalizar.");
+    document.getElementById("frete")?.scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+
+  const cep = document.getElementById("cep")?.value?.trim();
+  const street = document.getElementById("addressStreet")?.value?.trim();
+  const number = document.getElementById("addressNumber")?.value?.trim();
+  const complement = document.getElementById("addressComplement")?.value?.trim();
+  const neighborhood = document.getElementById("addressNeighborhood")?.value?.trim();
+  const city = document.getElementById("addressCity")?.value?.trim();
+  const state = document.getElementById("addressState")?.value?.trim()?.toUpperCase();
+
+  if (!cep || normalizeCep(cep).length !== 8) {
+    showToast("Informe um CEP válido.");
+    return;
+  }
+
+  if (!number) {
+    showToast("Informe o número do endereço.");
+    document.getElementById("addressNumber")?.focus();
+    return;
+  }
+
+  if (!street) {
+    showToast("Informe a rua ou avenida.");
+    return;
+  }
+
+  if (!neighborhood) {
+    showToast("Informe o bairro.");
+    return;
+  }
+
+  if (!city) {
+    showToast("Informe a cidade.");
+    return;
+  }
+
+  if (!state) {
+    showToast("Informe o estado.");
+    return;
+  }
+
+  const subtotal = getCartSubtotal();
+  const shippingPrice = selectedShipping.type === "shipping" ? selectedShipping.price : 0;
+  const total = subtotal + shippingPrice;
+
+  let message = `Olá! Gostaria de finalizar meu pedido pela WJ Imports.%0A%0A`;
+  message += `*PRODUTOS*%0A`;
+
+  cart.forEach(item => {
+    const itemTotal = item.price * item.quantity;
+    message += `• ${encodeURIComponent(item.name)} — ${item.quantity}x — ${encodeURIComponent(formatMoney(itemTotal))}%0A`;
+  });
+
+  message += `%0A`;
+  message += `*SUBTOTAL:* ${encodeURIComponent(formatMoney(subtotal))}%0A`;
+  message += `%0A`;
+  message += `*ENTREGA:*%0A`;
+
+  if (selectedShipping.type === "combine") {
+    message += `• Forma: Combinar entrega%0A`;
+  } else {
+    message += `• Transportadora: ${encodeURIComponent(selectedShipping.name)}%0A`;
+    message += `• Prazo: ${encodeURIComponent(selectedShipping.deliveryTime)}%0A`;
+    message += `• Frete: ${encodeURIComponent(formatMoney(selectedShipping.price))}%0A`;
+  }
+
+  message += `%0A`;
+  message += `*ENDEREÇO DE ENTREGA:*%0A`;
+  message += `${encodeURIComponent(street)}, ${encodeURIComponent(number)}%0A`;
+  if (complement) {
+    message += `Complemento: ${encodeURIComponent(complement)}%0A`;
+  }
+  message += `${encodeURIComponent(neighborhood)}%0A`;
+  message += `${encodeURIComponent(city)} - ${encodeURIComponent(state)}%0A`;
+  message += `CEP: ${encodeURIComponent(formatCep(cep))}%0A`;
+  message += `%0A`;
+  message += `*TOTAL:* ${encodeURIComponent(formatMoney(total))}%0A`;
+
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+  window.open(url, "_blank");
 }
-function formatDelivery(rate) {
-  const days = rate.deliveryTime ?? rate.delivery_time ?? rate.deadline ?? rate.deliveryDays;
-  return days === undefined || days === null || days === "" ? "Prazo informado pela transportadora" : `${days} dia(s) útil(eis)`;
-}
-function formatCep(cep) { return `${cep.slice(0,5)}-${cep.slice(5)}`; }
-function toast(message) {
-  const element = document.getElementById("toast");
-  element.textContent = message;
-  element.style.display = "block";
-  clearTimeout(window.__toastTimer);
-  window.__toastTimer = setTimeout(() => element.style.display = "none",2200);
-}
-document.getElementById("cep").addEventListener("input", event => {
-  const value = event.target.value.replace(/\D/g,"").slice(0,8);
-  event.target.value = value.length > 5 ? value.slice(0,5) + "-" + value.slice(5) : value;
+
+// ============================================================
+// EVENTOS
+// ============================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderCategories();
+  renderProducts();
+  updateCart();
+
+  // CEP
+  const cepInput = document.getElementById("cep");
+  if (cepInput) {
+    cepInput.addEventListener("input", () => {
+      const formatted = formatCep(cepInput.value);
+      cepInput.value = formatted;
+      if (normalizeCep(formatted).length === 8) {
+        lookupCep();
+      }
+    });
+  }
+
+  // UF sempre em maiúsculas
+  const stateInput = document.getElementById("addressState");
+  if (stateInput) {
+    stateInput.addEventListener("input", () => {
+      stateInput.value = stateInput.value
+        .toUpperCase()
+        .replace(/[^A-Z]/g, "")
+        .slice(0, 2);
+    });
+  }
+
+  // Fechar carrinho clicando fora
+  const cartModal = document.getElementById("cartModal");
+  if (cartModal) {
+    cartModal.addEventListener("click", event => {
+      if (event.target === cartModal) {
+        closeCart();
+      }
+    });
+  }
+
+  // ESC fecha os modais
+  document.addEventListener("keydown", event => {
+    if (event.key !== "Escape") {
+      return;
+    }
+    closeCart();
+    const imageModal = document.getElementById("imageModal");
+    if (imageModal) {
+      imageModal.classList.remove("open");
+    }
+  });
 });
-document.getElementById("shippingQty").addEventListener("change", event => {
-  event.target.value = Math.max(1,Math.min(20,Number(event.target.value || 1)));
-});
-renderProducts();
-saveCart();
