@@ -13,3 +13,43 @@ section{max-width:1240px;margin:auto;padding:82px 22px}.section-head{margin-bott
 #toast{position:fixed;right:20px;bottom:20px;z-index:3000;display:none;max-width:330px;padding:12px 16px;border:1px solid #333;border-radius:9px;background:#f5f5f5;color:#111;box-shadow:0 10px 35px rgba(0,0,0,.35)}footer{padding:35px 20px;text-align:center;border-top:1px solid #202020;color:#666;font-size:12px}@keyframes spin{to{transform:rotate(360deg)}}@keyframes zoomImage{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
 @media(max-width:950px){nav{display:none}.categories{grid-template-columns:repeat(2,1fr)}.products{grid-template-columns:repeat(2,1fr)}.shipping-box{grid-template-columns:1fr}.contact-grid{grid-template-columns:1fr}}
 @media(max-width:620px){.nav{padding:11px 15px}.logo{font-size:21px}.hero{min-height:600px}.hero-content{padding:75px 18px}.hero h1{font-size:46px;letter-spacing:-2px}section{padding:60px 16px}.categories,.products,.filters{grid-template-columns:1fr}.product-img{height:310px}.shipping-box{padding:22px}.package-fields{grid-template-columns:1fr 1fr}.image-modal{padding:70px 45px}.modal-image{max-width:92vw;max-height:74vh}.modal-arrow{width:42px;height:42px;font-size:31px}.modal-arrow-left{left:7px}.modal-arrow-right{right:7px}.close-image{top:12px;right:12px;width:44px;height:44px}}
+
+
+/* ============================================================
+   CHECKOUT DENTRO DO CARRINHO
+============================================================ */
+.checkout-view{display:grid;gap:12px}
+.checkout-help{margin:-4px 0 4px;color:#888;font-size:13px;line-height:1.5}
+.checkout-form{display:grid;gap:12px}
+.checkout-form label{display:grid;gap:6px}
+.checkout-form label>span{font-size:12px;color:#aaa}
+.checkout-form input{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #303030;border-radius:9px;background:#0d0d0d;color:#fff;outline:none}
+.checkout-form input:focus{border-color:rgba(212,175,55,.65)}
+.address-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.address-fields label:first-child{grid-column:1/-1}
+.address-fields label:nth-child(3){grid-column:1/-1}
+.address-status{min-height:18px;font-size:12px;color:#888}
+.address-status.success{color:#8fcf9a}
+.address-status.error{color:#ff8b8b}
+.address-status.loading{color:#d4af37}
+.cart-summary,.checkout-summary{display:grid;gap:8px;margin:15px 0;padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025)}
+.cart-summary>div,.checkout-summary>div{display:flex;justify-content:space-between;gap:15px}
+.grand-total{border-top:1px solid rgba(255,255,255,.12);padding-top:10px;margin-top:3px;font-size:20px}
+.shipping-options{display:grid;gap:8px;margin-top:10px}
+.shipping-options-title{display:grid;gap:3px;margin-bottom:3px}
+.shipping-options-title span{font-size:12px;color:#777}
+.shipping-option{position:relative;display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:10px;padding:13px;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:#0c0c0c;cursor:pointer;transition:.2s}
+.shipping-option:hover,.shipping-option.selected{border-color:rgba(212,175,55,.65);background:rgba(212,175,55,.055)}
+.shipping-option input{position:absolute;opacity:0;pointer-events:none}
+.shipping-radio{width:16px;height:16px;border:2px solid #666;border-radius:50%;position:relative}
+.shipping-option input:checked + .shipping-radio{border-color:var(--gold-light)}
+.shipping-option input:checked + .shipping-radio:after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--gold-light)}
+.shipping-option-content{display:grid;gap:3px}
+.shipping-option-content small{color:#777;font-size:11px}
+.shipping-option-price{color:var(--gold-light);font-weight:800;white-space:nowrap}
+.shipping-combine .shipping-option-price{font-size:12px}
+.shipping-result{min-height:40px;padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:10px;background:rgba(0,0,0,.2)}
+.shipping-empty{display:grid;gap:3px;color:#aaa}.shipping-empty p{color:#777;font-size:12px}
+.shipping-loading{display:flex;align-items:center;gap:10px;color:#999}.shipping-loading span{width:18px;height:18px;border:2px solid #444;border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+.shipping-error{color:#ff8b8b}.shipping-error p{color:#888;font-size:12px}
+@media(max-width:620px){.address-fields{grid-template-columns:1fr}.address-fields label:first-child,.address-fields label:nth-child(3){grid-column:auto}.shipping-option{grid-template-columns:20px 1fr}.shipping-option-price{grid-column:2;justify-self:start}}

@@ -20,8 +20,7 @@
         <a href="#inicio">Início</a>
         <a href="#categorias">Categorias</a>
         <a href="#produtos">Produtos</a>
-        <a href="#frete">Frete</a>
-        <a href="#contato">Contato</a>
+          <a href="#contato">Contato</a>
       </nav>
 
       <button class="cart-btn" type="button" onclick="openCart()">
@@ -51,8 +50,7 @@
 
         <div class="actions">
           <a class="btn primary" href="#produtos">Ver produtos</a>
-          <a class="btn" href="#frete">Calcular frete</a>
-        </div>
+            </div>
 
         <div class="hero-points">
           <span>✓ Catálogo atualizado</span>
@@ -112,94 +110,6 @@
       <div class="products" id="productGrid"></div>
     </section>
 
-    <!-- FRETE -->
-    <section id="frete">
-      <div class="shipping-box">
-        <div class="shipping-copy">
-          <span class="eyebrow">ENTREGA</span>
-          <h2>Calcule seu frete em tempo real</h2>
-          <p>Informe o CEP de destino. A cotação é feita pela integração da WJ Imports com o SuperFrete.</p>
-          <div class="shipping-note">
-            <strong>Frete real</strong>
-            <span>Preço e prazo devolvidos pelo SuperFrete conforme origem, peso e dimensões do pacote.</span>
-          </div>
-        </div>
-
-        <!-- FORMULÁRIO DE FRETE -->
-        <form id="shippingForm" class="shipping-form" onsubmit="calculateShipping(event)">
-          <!-- CEP -->
-          <label>
-            <span>CEP de destino</span>
-            <input id="cep" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" required>
-          </label>
-
-          <!-- STATUS DO CEP -->
-          <div id="addressStatus" class="address-status" aria-live="polite"></div>
-
-          <!-- CAMPOS DO ENDEREÇO -->
-          <div class="address-fields">
-            <label>
-              <span>Rua / Avenida</span>
-              <input id="addressStreet" type="text" autocomplete="street-address" placeholder="Rua / Avenida">
-            </label>
-
-            <label>
-              <span>Número *</span>
-              <input id="addressNumber" type="text" autocomplete="address-line2" placeholder="Número" required>
-            </label>
-
-            <label>
-              <span>Complemento</span>
-              <input id="addressComplement" type="text" placeholder="Apartamento, bloco, casa...">
-            </label>
-
-            <label>
-              <span>Bairro</span>
-              <input id="addressNeighborhood" type="text" autocomplete="address-level3" placeholder="Bairro">
-            </label>
-
-            <label>
-              <span>Cidade</span>
-              <input id="addressCity" type="text" autocomplete="address-level2" placeholder="Cidade">
-            </label>
-
-            <label>
-              <span>UF</span>
-              <input id="addressState" type="text" maxlength="2" placeholder="SP">
-            </label>
-          </div>
-
-          <!-- DADOS DO PACOTE -->
-          <div class="package-fields">
-            <label>
-              <span>Qtd.</span>
-              <input id="shippingQty" type="number" min="1" max="20" value="1">
-            </label>
-            <label>
-              <span>Peso (kg)</span>
-              <input id="shippingWeight" type="number" min="0.1" step="0.01" value="0.30">
-            </label>
-          </div>
-
-          <!-- BOTÃO CALCULAR -->
-          <button id="shippingButton" class="btn primary full" type="submit">
-            Calcular frete
-          </button>
-        </form>
-
-        <!-- RESULTADO DO FRETE -->
-        <div id="shippingResult" class="shipping-result" aria-live="polite">
-          <div class="shipping-empty">
-            <span class="shipping-icon">⌁</span>
-            <div>
-              <strong>Digite seu CEP</strong>
-              <p>As opções de envio aparecerão aqui.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- CONTATO -->
     <section id="contato">
       <div class="section-head">
@@ -233,23 +143,72 @@
 
   <!-- CARRINHO -->
   <div id="cartModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
-    <div class="modal-card">
-      <button class="close" type="button" onclick="closeCart()" aria-label="Fechar">×</button>
+  <div class="modal-card cart-card">
+    <button class="close" type="button" onclick="closeCart()" aria-label="Fechar">×</button>
+
+    <div id="cartView">
       <span class="eyebrow">SEU PEDIDO</span>
       <h2 id="cartTitle">Carrinho</h2>
       <div id="cartItems"></div>
-      <div class="cart-total">
-        <span>Total</span>
-        <strong id="cartTotal">R$ 0,00</strong>
+
+      <div class="cart-summary">
+        <div><span>Subtotal</span><strong id="cartSubtotal">R$ 0,00</strong></div>
+        <div><span>Frete</span><strong id="cartShipping">A calcular</strong></div>
+        <div class="cart-total"><span>Total</span><strong id="cartTotal">R$ 0,00</strong></div>
       </div>
+
       <button class="btn primary full" type="button" onclick="checkout()">
-        Finalizar pelo WhatsApp
+        Continuar para entrega
       </button>
     </div>
-  </div>
 
-  <!-- MODAL DE IMAGEM -->
-  <div id="imageModal" class="image-modal" onclick="closeImage(event)">
+    <div id="checkoutView" class="checkout-view" style="display:none;">
+      <span class="eyebrow">FINALIZAR PEDIDO</span>
+      <h2>Dados para entrega</h2>
+      <p class="checkout-help">Informe o CEP para consultar o endereço e as opções reais de frete.</p>
+
+      <div class="checkout-form">
+        <label>
+          <span>CEP *</span>
+          <input id="cep" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" required>
+        </label>
+
+        <div id="addressStatus" class="address-status" aria-live="polite"></div>
+
+        <div class="address-fields">
+          <label><span>Rua / Avenida *</span><input id="addressStreet" type="text" autocomplete="street-address" placeholder="Rua / Avenida"></label>
+          <label><span>Número *</span><input id="addressNumber" type="text" autocomplete="address-line2" placeholder="Número"></label>
+          <label><span>Complemento</span><input id="addressComplement" type="text" placeholder="Apartamento, bloco, casa..."></label>
+          <label><span>Bairro *</span><input id="addressNeighborhood" type="text" autocomplete="address-level3" placeholder="Bairro"></label>
+          <label><span>Cidade *</span><input id="addressCity" type="text" autocomplete="address-level2" placeholder="Cidade"></label>
+          <label><span>UF *</span><input id="addressState" type="text" maxlength="2" placeholder="SP"></label>
+        </div>
+
+        <div class="package-fields">
+          <label><span>Qtd.</span><input id="shippingQty" type="number" min="1" max="20" value="1"></label>
+          <label><span>Peso total (kg)</span><input id="shippingWeight" type="number" min="0.1" step="0.01" value="0.30"></label>
+        </div>
+
+        <button id="shippingButton" class="btn primary full" type="button" onclick="calculateShipping(event)">Calcular opções de frete</button>
+
+        <div id="shippingResult" class="shipping-result" aria-live="polite">
+          <div class="shipping-empty"><strong>Digite seu CEP</strong><p>As opções de envio aparecerão aqui.</p></div>
+        </div>
+
+        <div class="checkout-summary">
+          <div><span>Produtos</span><strong id="checkoutSubtotal">R$ 0,00</strong></div>
+          <div><span>Frete</span><strong id="checkoutShipping">A calcular</strong></div>
+          <div class="grand-total"><span>Total</span><strong id="checkoutTotal">R$ 0,00</strong></div>
+        </div>
+
+        <button class="btn full" type="button" onclick="backToCart()">Voltar ao carrinho</button>
+        <button class="btn primary full" type="button" onclick="finishOrder()">Enviar pedido pelo WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="imageModal"<div id="imageModal" class="image-modal" onclick="closeImage(event)">
     <button class="close-image" type="button" onclick="closeImage(event)" aria-label="Fechar">×</button>
     <button class="modal-arrow modal-arrow-left" type="button" onclick="changeModalImage(-1, event)" aria-label="Imagem anterior">‹</button>
     <img id="modalImage" class="modal-image" src="" alt="Imagem ampliada" onclick="event.stopPropagation()">
