@@ -13,12 +13,16 @@ const ORIGIN = String(
   process.env.SUPERFRETE_ORIGIN_CEP || ""
 ).replace(/\D/g, "");
 
+// ===============================
+// RESPOSTA JSON
+// ===============================
+
 function send(res, status, data) {
   res.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
 
-    // CORS — permite o GitHub Pages acessar o Render
+    // CORS - permite o GitHub Pages acessar o Render
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type"
@@ -26,6 +30,10 @@ function send(res, status, data) {
 
   res.end(JSON.stringify(data));
 }
+
+// ===============================
+// LER JSON DA REQUISIÇÃO
+// ===============================
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -51,6 +59,10 @@ function readBody(req) {
     req.on("error", reject);
   });
 }
+
+// ===============================
+// NORMALIZAR RESULTADO
+// ===============================
 
 function normalize(rate) {
   const price = Number(
@@ -89,35 +101,45 @@ function normalize(rate) {
   };
 }
 
+// ===============================
+// CALCULAR FRETE
+// ===============================
+
 async function calculate(body) {
+  // Verifica token
   if (!TOKEN) {
     throw new Error(
       "SUPERFRETE_TOKEN não configurado no Render."
     );
   }
 
+  // Verifica CEP de origem
   if (ORIGIN.length !== 8) {
     throw new Error(
       "SUPERFRETE_ORIGIN_CEP não configurado corretamente no Render."
     );
   }
 
+  // CEP destino
   const cep = String(body.cep || "").replace(/\D/g, "");
 
   if (cep.length !== 8) {
     throw new Error("CEP de destino inválido.");
   }
 
+  // Quantidade
   const quantity = Math.max(
     1,
     Math.min(20, Number(body.quantity || 1))
   );
 
+  // Peso de uma camisa/pacote
   const weight = Math.max(
     0.1,
     Number(body.weight || 0.3)
   );
 
+  // Dimensões
   const height = Math.max(
     1,
     Number(body.height || 10)
@@ -132,6 +154,10 @@ async function calculate(body) {
     1,
     Number(body.length || 20)
   );
+
+  // ===============================
+  // DADOS ENVIADOS PARA SUPERFRETE
+  // ===============================
 
   const payload = {
     from: {
@@ -149,6 +175,22 @@ async function calculate(body) {
       length
     }
   };
+
+  console.log("Calculando frete:", {
+    origem: ORIGIN,
+    destino: cep,
+    quantidade: quantity,
+    peso: weight * quantity,
+    dimensoes: {
+      height,
+      width,
+      length
+    }
+  });
+
+  // ===============================
+  // CHAMADA SUPERFRETE
+  // ===============================
 
   const response = await fetch(
     `${BASE}/api/v0/calculator`,
@@ -178,7 +220,17 @@ async function calculate(body) {
     };
   }
 
+  // ===============================
+  // ERRO DA SUPERFRETE
+  // ===============================
+
   if (!response.ok) {
+    console.error(
+      "Erro SuperFrete:",
+      response.status,
+      data
+    );
+
     throw new Error(
       data?.message ||
       data?.error ||
@@ -186,6 +238,10 @@ async function calculate(body) {
       `SuperFrete retornou HTTP ${response.status}.`
     );
   }
+
+  // ===============================
+  // LOCALIZAR SERVIÇOS
+  // ===============================
 
   const raw =
     Array.isArray(data)
@@ -198,84 +254,146 @@ async function calculate(body) {
             ? data.data
             : [];
 
+  // ===============================
+  // NORMALIZAR SERVIÇOS
+  // ===============================
+
   const rates = raw
     .map(normalize)
     .filter(rate => rate.price > 0)
     .sort((a, b) => a.price - b.price);
+
+  console.log(
+    `Fretes encontrados: ${rates.length}`
+  );
 
   return {
     rates
   };
 }
 
+// ===============================
+// SERVIDOR
+// ===============================
+
 const server = http.createServer(
   async (req, res) => {
+
     try {
 
-      // CORS preflight
+      // =============================
+      // CORS PREFLIGHT
+      // =============================
+
       if (req.method === "OPTIONS") {
+
         res.writeHead(204, {
           "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-          "Access-Control-Max-Age": "86400"
+          "Access-Control-Allow-Methods":
+            "POST, GET, OPTIONS",
+          "Access-Control-Allow-Headers":
+            "Content-Type",
+          "Access-Control-Max-Age":
+            "86400"
         });
 
         return res.end();
       }
 
-      // API de cálculo
+      // =============================
+      // CALCULAR FRETE
+      // =============================
+
       if (
         req.method === "POST" &&
         req.url === "/api/frete"
       ) {
+
         const body = await readBody(req);
 
         const result = await calculate(body);
 
-        return send(res, 200, result);
+        return send(
+          res,
+          200,
+          result
+        );
       }
 
-      // Teste do servidor
+      // =============================
+      // TESTE DA API
+      // =============================
+
       if (
         req.method === "GET" &&
         req.url === "/api/health"
       ) {
-        return send(res, 200, {
-          ok: true,
-          superfreteConfigured:
-            Boolean(TOKEN && ORIGIN.length === 8)
-        });
+
+        return send(
+          res,
+          200,
+          {
+            ok: true,
+
+            superfreteConfigured:
+              Boolean(
+                TOKEN &&
+                ORIGIN.length === 8
+              )
+          }
+        );
       }
 
-      return send(res, 404, {
-        error: "Rota não encontrada."
-      });
+      // =============================
+      // ROTA NÃO ENCONTRADA
+      // =============================
+
+      return send(
+        res,
+        404,
+        {
+          error: "Rota não encontrada."
+        }
+      );
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "Erro no servidor:",
+        error
+      );
 
-      return send(res, 500, {
-        error:
-          error.message ||
-          "Erro interno no servidor."
-      });
+      return send(
+        res,
+        500,
+        {
+          error:
+            error.message ||
+            "Erro interno do servidor."
+        }
+      );
     }
   }
 );
+
+// ===============================
+// INICIAR SERVIDOR
+// ===============================
 
 server.listen(
   PORT,
   HOST,
   () => {
+
     console.log(
       `WJ Imports API rodando em ${HOST}:${PORT}`
     );
 
     console.log(
       `SuperFrete: ${
-        TOKEN ? "configurado" : "ausente"
+        TOKEN
+          ? "configurado"
+          : "ausente"
       }`
     );
 
