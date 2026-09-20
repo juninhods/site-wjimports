@@ -1,8 +1,6 @@
-/* =====================================================
-   PRODUTOS
-===================================================== */
-
+/* WJ IMPORTS — catálogo + carrinho + SuperFrete */
 const products = [
+
 
   {
     id: 1,
@@ -184,997 +182,232 @@ const products = [
 
 ];
 
-
-/* =====================================================
-   CARRINHO
-===================================================== */
-
-let cart = JSON.parse(
-  localStorage.getItem("wjCart") || "[]"
-);
-
-
-/* =====================================================
-   CONTROLE DO MODAL DE IMAGEM
-===================================================== */
-
+const SHIPPING_CONFIG = { height: 10, width: 15, length: 20, defaultWeight: 0.30 };
+let cart = JSON.parse(localStorage.getItem("wjCart") || "[]");
 let modalProductId = null;
-
 let modalImageIndex = 0;
 
+const cats = [...new Set(products.map(p => p.cat))];
+const categoryGrid = document.getElementById("categoryGrid");
+const categoryFilter = document.getElementById("categoryFilter");
 
-/* =====================================================
-   CATEGORIAS
-===================================================== */
+categoryGrid.innerHTML = cats.map((cat, index) => `
+  <button class="category" type="button" onclick="setCategory(${JSON.stringify(cat)})">
+    <span class="category-number">${String(index + 1).padStart(2, "0")}</span>
+    <div><h3>${escapeHtml(cat)}</h3><p>${products.filter(p => p.cat === cat).length} produto(s)</p></div>
+    <span class="category-arrow">→</span>
+  </button>
+`).join("");
 
-const cats = [
-
-  "Eletroeletrônicos",
-
-  "Câmeras e Segurança",
-
-  "Relógios",
-
-  "Perfumes Importados",
-
-  "Dia a Dia/Esportes",
-
-  "Dia a Dia/Lazer"
-
-];
-
-
-document.getElementById("categoryGrid").innerHTML =
-
-  cats.map(cat => `
-
-    <div
-      class="category"
-      onclick="setCategory('${cat}')"
-    >
-
-      <h3>
-        ${cat}
-      </h3>
-
-      <p>
-        Ver produtos
-      </p>
-
-    </div>
-
-  `).join("");
-
-
-document.getElementById("categoryFilter").innerHTML +=
-
-  cats.map(cat => `
-
-    <option value="${cat}">
-      ${cat}
-    </option>
-
-  `).join("");
-
-
-/* =====================================================
-   DINHEIRO
-===================================================== */
+categoryFilter.innerHTML += cats.map(cat =>
+  `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`
+).join("");
 
 function money(value) {
-
-  return value.toLocaleString(
-    "pt-BR",
-    {
-      style: "currency",
-      currency: "BRL"
-    }
-  );
-
+  return Number(value || 0).toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
 }
-
-
-/* =====================================================
-   TROCAR IMAGEM DO PRODUTO
-===================================================== */
-
+function escapeHtml(value) {
+  return String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function setCategory(category) {
+  categoryFilter.value = category;
+  document.getElementById("produtos").scrollIntoView({behavior:"smooth"});
+  renderProducts();
+}
 function changeImage(productId, direction) {
-
-  const product = products.find(
-    item => item.id === productId
-  );
-
-
-  if (!product) return;
-
-
-  if (product.currentImage === undefined) {
-
-    product.currentImage = 0;
-
-  }
-
-
+  const product = products.find(item => item.id === productId);
+  if (!product || !product.image?.length) return;
+  product.currentImage = product.currentImage ?? 0;
   product.currentImage += direction;
-
-
-  if (product.currentImage < 0) {
-
-    product.currentImage =
-      product.image.length - 1;
-
-  }
-
-
-  if (
-    product.currentImage >=
-    product.image.length
-  ) {
-
-    product.currentImage = 0;
-
-  }
-
-
-  const imageElement =
-    document.getElementById(
-      `product-image-${productId}`
-    );
-
-
-  if (imageElement) {
-
-    imageElement.src =
-      product.image[product.currentImage];
-
-  }
-
-
-  const counter =
-    document.getElementById(
-      `image-counter-${productId}`
-    );
-
-
-  if (counter) {
-
-    counter.textContent =
-      `${product.currentImage + 1}/${product.image.length}`;
-
-  }
-
+  if (product.currentImage < 0) product.currentImage = product.image.length - 1;
+  if (product.currentImage >= product.image.length) product.currentImage = 0;
+  const image = document.getElementById(`product-image-${productId}`);
+  const counter = document.getElementById(`image-counter-${productId}`);
+  if (image) image.src = product.image[product.currentImage];
+  if (counter) counter.textContent = `${product.currentImage + 1}/${product.image.length}`;
 }
-
-
-/* =====================================================
-   ABRIR IMAGEM GRANDE
-===================================================== */
-
 function openImage(productId) {
-
-  const product = products.find(
-    item => item.id === productId
-  );
-
-
+  const product = products.find(item => item.id === productId);
   if (!product) return;
-
-
   modalProductId = productId;
-
-
-  modalImageIndex =
-    product.currentImage || 0;
-
-
+  modalImageIndex = product.currentImage || 0;
   updateModalImage();
-
-
-  const modal =
-    document.getElementById("imageModal");
-
-
-  if (!modal) return;
-
-
-  modal.style.display = "flex";
-
-
+  document.getElementById("imageModal").style.display = "flex";
   document.body.style.overflow = "hidden";
-
 }
-
-
-/* =====================================================
-   ATUALIZAR IMAGEM GRANDE
-===================================================== */
-
 function updateModalImage() {
-
-  const product = products.find(
-    item => item.id === modalProductId
-  );
-
-
+  const product = products.find(item => item.id === modalProductId);
   if (!product) return;
-
-
-  const modalImage =
-    document.getElementById("modalImage");
-
-
-  const counter =
-    document.getElementById(
-      "modalImageCounter"
-    );
-
-
-  modalImage.src =
-    product.image[modalImageIndex];
-
-
-  modalImage.alt =
-    product.name;
-
-
-  counter.textContent =
-    `${modalImageIndex + 1}/${product.image.length}`;
-
+  document.getElementById("modalImage").src = product.image[modalImageIndex];
+  document.getElementById("modalImage").alt = product.name;
+  document.getElementById("modalImageCounter").textContent = `${modalImageIndex + 1}/${product.image.length}`;
 }
-
-
-/* =====================================================
-   TROCAR IMAGEM NO MODAL
-===================================================== */
-
 function changeModalImage(direction, event) {
-
-  if (event) {
-
-    event.stopPropagation();
-
-  }
-
-
-  const product = products.find(
-    item => item.id === modalProductId
-  );
-
-
+  event?.stopPropagation();
+  const product = products.find(item => item.id === modalProductId);
   if (!product) return;
-
-
   modalImageIndex += direction;
-
-
-  if (modalImageIndex < 0) {
-
-    modalImageIndex =
-      product.image.length - 1;
-
-  }
-
-
-  if (
-    modalImageIndex >=
-    product.image.length
-  ) {
-
-    modalImageIndex = 0;
-
-  }
-
-
-  product.currentImage =
-    modalImageIndex;
-
-
+  if (modalImageIndex < 0) modalImageIndex = product.image.length - 1;
+  if (modalImageIndex >= product.image.length) modalImageIndex = 0;
+  product.currentImage = modalImageIndex;
   updateModalImage();
-
-
-  /* Atualiza também a imagem do card */
-
-  const productImage =
-    document.getElementById(
-      `product-image-${product.id}`
-    );
-
-
-  if (productImage) {
-
-    productImage.src =
-      product.image[modalImageIndex];
-
-  }
-
-
-  /* Atualiza contador do card */
-
-  const productCounter =
-    document.getElementById(
-      `image-counter-${product.id}`
-    );
-
-
-  if (productCounter) {
-
-    productCounter.textContent =
-      `${modalImageIndex + 1}/${product.image.length}`;
-
-  }
-
+  const image = document.getElementById(`product-image-${product.id}`);
+  const counter = document.getElementById(`image-counter-${product.id}`);
+  if (image) image.src = product.image[modalImageIndex];
+  if (counter) counter.textContent = `${modalImageIndex + 1}/${product.image.length}`;
 }
-
-
-/* =====================================================
-   FECHAR IMAGEM GRANDE
-===================================================== */
-
 function closeImage(event) {
-
-  if (event) {
-
-    event.stopPropagation();
-
-  }
-
-
-  const modal =
-    document.getElementById("imageModal");
-
-
-  if (!modal) return;
-
-
-  modal.style.display = "none";
-
-
+  if (event && event.target !== event.currentTarget && !event.target.classList.contains("close-image")) return;
+  document.getElementById("imageModal").style.display = "none";
   document.body.style.overflow = "";
-
-
   modalProductId = null;
-
-
   modalImageIndex = 0;
-
 }
-
-
-/* =====================================================
-   TECLADO
-===================================================== */
-
-document.addEventListener(
-  "keydown",
-  function(event) {
-
-    const modal =
-      document.getElementById("imageModal");
-
-
-    if (!modal) return;
-
-
-    if (modal.style.display !== "flex") {
-
-      return;
-
-    }
-
-
-    /* ESC */
-
-    if (event.key === "Escape") {
-
-      closeImage();
-
-    }
-
-
-    /* SETA ESQUERDA */
-
-    if (event.key === "ArrowLeft") {
-
-      changeModalImage(-1);
-
-    }
-
-
-    /* SETA DIREITA */
-
-    if (event.key === "ArrowRight") {
-
-      changeModalImage(1);
-
-    }
-
-  }
-);
-
-
-/* =====================================================
-   PRODUTOS
-===================================================== */
+document.addEventListener("keydown", event => {
+  const modal = document.getElementById("imageModal");
+  if (modal.style.display !== "flex") return;
+  if (event.key === "Escape") closeImage();
+  if (event.key === "ArrowLeft") changeModalImage(-1);
+  if (event.key === "ArrowRight") changeModalImage(1);
+});
 
 function renderProducts() {
-
-  const search =
-    document.getElementById("search")
-      .value
-      .toLowerCase();
-
-
-  const category =
-    document.getElementById("categoryFilter")
-      .value;
-
-
-  const sort =
-    document.getElementById("sort")
-      .value;
-
-
+  const search = document.getElementById("search").value.trim().toLowerCase();
+  const category = categoryFilter.value;
+  const sort = document.getElementById("sort").value;
   let list = products.filter(product =>
-
-    (
-      category === "Todos" ||
-      product.cat === category
-    )
-
-    &&
-
-    product.name
-      .toLowerCase()
-      .includes(search)
-
+    (category === "Todos" || product.cat === category) &&
+    product.name.toLowerCase().includes(search)
   );
-
-
-  /* ===================================================
-     ORDENAÇÃO
-  =================================================== */
-
-  if (sort === "low") {
-
-    list.sort(
-      (a, b) =>
-        a.price - b.price
-    );
-
-  }
-
-
-  if (sort === "high") {
-
-    list.sort(
-      (a, b) =>
-        b.price - a.price
-    );
-
-  }
-
-
-  if (sort === "name") {
-
-    list.sort(
-      (a, b) =>
-        a.name.localeCompare(b.name)
-    );
-
-  }
-
-
-  document.getElementById(
-    "resultText"
-  ).textContent =
-    `${list.length} produto(s) encontrado(s).`;
-
-
-  /* ===================================================
-     RENDERIZAR
-  =================================================== */
-
-  document.getElementById(
-    "productGrid"
-  ).innerHTML =
-
-    list.map(product => {
-
-      if (
-        product.currentImage ===
-        undefined
-      ) {
-
-        product.currentImage = 0;
-
-      }
-
-
-      const hasMultipleImages =
-        product.image.length > 1;
-
-
-      return `
-
-        <article class="product">
-
-
-          <div class="product-img">
-
-
-            <!-- IMAGEM -->
-
-            <img
-              id="product-image-${product.id}"
-              src="${product.image[product.currentImage]}"
-              alt="${product.name}"
-              onclick="openImage(${product.id})"
-              style="cursor: zoom-in;"
-            >
-
-
-            ${
-              hasMultipleImages
-
-              ? `
-
-                <!-- SETA ESQUERDA -->
-
-                <button
-                  type="button"
-                  class="image-arrow image-arrow-left"
-                  onclick="changeImage(${product.id}, -1)"
-                  aria-label="Imagem anterior"
-                >
-                  ‹
-                </button>
-
-
-                <!-- SETA DIREITA -->
-
-                <button
-                  type="button"
-                  class="image-arrow image-arrow-right"
-                  onclick="changeImage(${product.id}, 1)"
-                  aria-label="Próxima imagem"
-                >
-                  ›
-                </button>
-
-
-                <!-- CONTADOR -->
-
-                <div
-                  class="image-counter"
-                  id="image-counter-${product.id}"
-                >
-                  ${product.currentImage + 1}/${product.image.length}
-                </div>
-
-              `
-
-              : ""
-
-            }
-
-
-          </div>
-
-
-          <div class="product-body">
-
-
-            <span class="tag">
-              ${product.cat}
-            </span>
-
-
-            <h3>
-              ${product.name}
-            </h3>
-
-
-            <div class="price">
-              ${money(product.price)}
-            </div>
-
-
-            <div class="stock">
-              Disponível
-            </div>
-
-
-            <button
-              type="button"
-              onclick="addToCart(${product.id})"
-            >
-              Adicionar ao carrinho
-            </button>
-
-
-          </div>
-
-
-        </article>
-
-      `;
-
-    }).join("");
-
+  if (sort === "low") list.sort((a,b) => a.price - b.price);
+  if (sort === "high") list.sort((a,b) => b.price - a.price);
+  if (sort === "name") list.sort((a,b) => a.name.localeCompare(b.name,"pt-BR"));
+  document.getElementById("resultText").textContent = `${list.length} produto(s) encontrado(s).`;
+
+  document.getElementById("productGrid").innerHTML = list.map(product => {
+    product.currentImage = product.currentImage ?? 0;
+    const hasMultiple = product.image.length > 1;
+    return `
+      <article class="product">
+        <div class="product-img">
+          <span class="product-badge">${escapeHtml(product.cat)}</span>
+          <img id="product-image-${product.id}" src="${product.image[product.currentImage]}" alt="${escapeHtml(product.name)}" loading="lazy" onclick="openImage(${product.id})">
+          ${hasMultiple ? `
+            <button class="image-arrow image-arrow-left" type="button" onclick="changeImage(${product.id},-1)" aria-label="Imagem anterior">‹</button>
+            <button class="image-arrow image-arrow-right" type="button" onclick="changeImage(${product.id},1)" aria-label="Próxima imagem">›</button>
+            <div class="image-counter" id="image-counter-${product.id}">${product.currentImage + 1}/${product.image.length}</div>
+          ` : ""}
+        </div>
+        <div class="product-body">
+          <h3>${escapeHtml(product.name)}</h3>
+          <div class="price">${money(product.price)}</div>
+          <div class="stock"><span></span> Disponível</div>
+          <button type="button" onclick="addToCart(${product.id})">Adicionar ao carrinho</button>
+        </div>
+      </article>
+    `;
+  }).join("") || `<div class="empty-products"><h3>Nenhum produto encontrado.</h3><p>Tente outro termo ou categoria.</p></div>`;
 }
-
-
-/* =====================================================
-   CATEGORIA
-===================================================== */
-
-function setCategory(category) {
-
-  document.getElementById(
-    "categoryFilter"
-  ).value = category;
-
-
-  document.getElementById(
-    "produtos"
-  ).scrollIntoView({
-    behavior: "smooth"
-  });
-
-
-  renderProducts();
-
-}
-
-
-/* =====================================================
-   CARRINHO
-===================================================== */
 
 function addToCart(id) {
-
-  const product =
-    products.find(
-      item => item.id === id
-    );
-
-
+  const product = products.find(item => item.id === id);
   if (!product) return;
-
-
-  cart.push(product);
-
-
+  cart.push({id:product.id, name:product.name, price:product.price});
   saveCart();
-
-
-  toast(
-    "Produto adicionado ao carrinho!"
-  );
-
+  toast("Produto adicionado ao carrinho!");
 }
-
-
-/* =====================================================
-   SALVAR CARRINHO
-===================================================== */
-
 function saveCart() {
-
-  localStorage.setItem(
-    "wjCart",
-    JSON.stringify(cart)
-  );
-
-
-  document.getElementById(
-    "cartCount"
-  ).textContent =
-    cart.length;
-
+  localStorage.setItem("wjCart", JSON.stringify(cart));
+  document.getElementById("cartCount").textContent = cart.length;
 }
-
-
-/* =====================================================
-   ABRIR CARRINHO
-===================================================== */
-
-function openCart() {
-
-  document.getElementById(
-    "cartModal"
-  ).style.display =
-    "block";
-
-
-  renderCart();
-
-}
-
-
-/* =====================================================
-   FECHAR CARRINHO
-===================================================== */
-
-function closeCart() {
-
-  document.getElementById(
-    "cartModal"
-  ).style.display =
-    "none";
-
-}
-
-
-/* =====================================================
-   MOSTRAR CARRINHO
-===================================================== */
-
+function openCart() { document.getElementById("cartModal").style.display = "block"; renderCart(); }
+function closeCart() { document.getElementById("cartModal").style.display = "none"; }
 function renderCart() {
-
-  const box =
-    document.getElementById(
-      "cartItems"
-    );
-
-
+  const box = document.getElementById("cartItems");
   if (!cart.length) {
-
-    box.innerHTML =
-      "<p>Seu carrinho está vazio.</p>";
-
-
-    document.getElementById(
-      "cartTotal"
-    ).textContent =
-      money(0);
-
-
+    box.innerHTML = `<div class="cart-empty"><strong>Seu carrinho está vazio.</strong><p>Adicione um produto para continuar.</p></div>`;
+    document.getElementById("cartTotal").textContent = money(0);
     return;
-
   }
-
-
-  box.innerHTML =
-    cart.map(
-      (product, index) => `
-
-        <div class="cart-item">
-
-          <span>
-            ${product.name}
-          </span>
-
-
-          <span>
-
-            ${money(product.price)}
-
-
-            <button
-              onclick="removeItem(${index})"
-            >
-              Remover
-            </button>
-
-          </span>
-
-        </div>
-
-      `
-    ).join("");
-
-
-  document.getElementById(
-    "cartTotal"
-  ).textContent =
-
-    money(
-
-      cart.reduce(
-        (total, product) =>
-          total + product.price,
-        0
-      )
-
-    );
-
+  box.innerHTML = cart.map((product,index) => `
+    <div class="cart-item"><div><strong>${escapeHtml(product.name)}</strong><small>${money(product.price)}</small></div><button type="button" onclick="removeItem(${index})">Remover</button></div>
+  `).join("");
+  document.getElementById("cartTotal").textContent = money(cart.reduce((sum,p) => sum + Number(p.price || 0),0));
 }
-
-
-/* =====================================================
-   REMOVER CARRINHO
-===================================================== */
-
-function removeItem(index) {
-
-  cart.splice(
-    index,
-    1
-  );
-
-
-  saveCart();
-
-
-  renderCart();
-
-}
-
-
-/* =====================================================
-   WHATSAPP
-===================================================== */
-
+function removeItem(index) { cart.splice(index,1); saveCart(); renderCart(); }
 function checkout() {
-
-  if (!cart.length) {
-
-    return toast(
-      "Seu carrinho está vazio."
-    );
-
-  }
-
-
-  const text =
-
-    "Olá, WJ Imports! Quero fazer um pedido:%0A" +
-
-    cart
-      .map(
-        product =>
-          `- ${product.name} — ${money(product.price)}`
-      )
-      .join("%0A");
-
-
-  window.open(
-    "https://wa.me/13996905523?text=" + text,
-    "_blank"
-  );
-
+  if (!cart.length) return toast("Seu carrinho está vazio.");
+  const total = cart.reduce((sum,p) => sum + Number(p.price || 0),0);
+  const text = ["Olá, WJ Imports! Quero fazer um pedido:","",...cart.map(p => `• ${p.name} — ${money(p.price)}`),"",`Total dos produtos: ${money(total)}`].join("\n");
+  window.open("https://wa.me/5513996905523?text=" + encodeURIComponent(text),"_blank");
 }
 
-
-/* =====================================================
-   FRETE
-===================================================== */
-
-function calculateShipping(event) {
-
+async function calculateShipping(event) {
   event.preventDefault();
+  const input = document.getElementById("cep");
+  const result = document.getElementById("shippingResult");
+  const button = document.getElementById("shippingButton");
+  const cep = input.value.replace(/\D/g,"");
+  if (cep.length !== 8) return toast("Digite um CEP válido.");
 
+  const qty = Math.max(1, Number(document.getElementById("shippingQty").value || 1));
+  const weight = Math.max(0.1, Number(document.getElementById("shippingWeight").value || SHIPPING_CONFIG.defaultWeight));
 
-  const cep =
-    document.getElementById("cep")
-      .value
-      .replace(/\D/g, "");
+  button.disabled = true;
+  button.textContent = "Calculando...";
+  result.innerHTML = `<div class="shipping-loading"><span></span><p>Consultando opções de envio...</p></div>`;
 
+  try {
+    const response = await fetch("/api/frete", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({cep,quantity:qty,weight,height:SHIPPING_CONFIG.height,width:SHIPPING_CONFIG.width,length:SHIPPING_CONFIG.length})
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Não foi possível calcular o frete.");
+    const rates = Array.isArray(data.rates) ? data.rates : [];
 
-  if (cep.length !== 8) {
-
-    return toast(
-      "Digite um CEP válido."
-    );
-
-  }
-
-
-  const region =
-    Number(
-      cep.substring(0, 1)
-    );
-
-
-  const pac =
-    region >= 0 &&
-    region <= 4
-
-      ? 24.90
-
-      : 34.90;
-
-
-  const sedex =
-    pac + 18;
-
-
-  document.getElementById(
-    "shippingResult"
-  ).innerHTML = `
-
-    <b>
-      Simulação para
-      ${cep.substring(0, 5)}-${cep.substring(5)}
-    </b>
-
-    <br>
-
-    PAC:
-    ${money(pac)}
-    — 5 a 10 dias úteis
-
-    <br>
-
-    SEDEX:
-    ${money(sedex)}
-    — 2 a 5 dias úteis
-
-    <br>
-
-    <small>
-      Valores demonstrativos.
-      Para cálculo real, conecte uma API de frete.
-    </small>
-
-  `;
-
-}
-
-
-/* =====================================================
-   TOAST
-===================================================== */
-
-function toast(message) {
-
-  const toastElement =
-    document.getElementById("toast");
-
-
-  toastElement.textContent =
-    message;
-
-
-  toastElement.style.display =
-    "block";
-
-
-  setTimeout(() => {
-
-    toastElement.style.display =
-      "none";
-
-  }, 1800);
-
-}
-
-
-/* =====================================================
-   MÁSCARA CEP
-===================================================== */
-
-document
-  .getElementById("cep")
-  .addEventListener(
-    "input",
-    event => {
-
-      const value =
-        event.target.value
-          .replace(/\D/g, "")
-          .slice(0, 8);
-
-
-      event.target.value =
-
-        value.length > 5
-
-          ? value.slice(0, 5)
-            + "-"
-            + value.slice(5)
-
-          : value;
-
+    if (!rates.length) {
+      result.innerHTML = `<div class="shipping-empty"><strong>Nenhuma opção disponível.</strong><p>Confira o CEP ou tente novamente.</p></div>`;
+      return;
     }
-  );
 
-
-/* =====================================================
-   INICIAR
-===================================================== */
-
+    result.innerHTML = `
+      <div class="shipping-results-head"><div><span class="eyebrow">OPÇÕES DE ENVIO</span><h3>Para ${formatCep(cep)}</h3></div><small>SuperFrete</small></div>
+      <div class="shipping-options">
+        ${rates.map(rate => `
+          <div class="shipping-option">
+            <div><strong>${escapeHtml(rate.name || rate.service || "Envio")}</strong><span>${formatDelivery(rate)}</span></div>
+            <strong class="shipping-price">${money(rate.price)}</strong>
+          </div>
+        `).join("")}
+      </div>`;
+  } catch (error) {
+    console.error(error);
+    result.innerHTML = `<div class="shipping-error"><strong>Não foi possível calcular agora.</strong><p>${escapeHtml(error.message)}</p><small>Confira as variáveis da SuperFrete no servidor.</small></div>`;
+  } finally {
+    button.disabled = false;
+    button.textContent = "Calcular frete";
+  }
+}
+function formatDelivery(rate) {
+  const days = rate.deliveryTime ?? rate.delivery_time ?? rate.deadline ?? rate.deliveryDays;
+  return days === undefined || days === null || days === "" ? "Prazo informado pela transportadora" : `${days} dia(s) útil(eis)`;
+}
+function formatCep(cep) { return `${cep.slice(0,5)}-${cep.slice(5)}`; }
+function toast(message) {
+  const element = document.getElementById("toast");
+  element.textContent = message;
+  element.style.display = "block";
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => element.style.display = "none",2200);
+}
+document.getElementById("cep").addEventListener("input", event => {
+  const value = event.target.value.replace(/\D/g,"").slice(0,8);
+  event.target.value = value.length > 5 ? value.slice(0,5) + "-" + value.slice(5) : value;
+});
+document.getElementById("shippingQty").addEventListener("change", event => {
+  event.target.value = Math.max(1,Math.min(20,Number(event.target.value || 1)));
+});
 renderProducts();
-
 saveCart();

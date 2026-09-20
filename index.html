@@ -1,541 +1,116 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>WJ Imports | Loja Online</title>
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WJ Imports — perfumes importados, kits e produtos selecionados.">
+  <title>WJ Imports | Perfumes Importados</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
-
 <body>
-
-
-<!-- =========================
-     HEADER
-========================= -->
-
-<header>
-
+<header class="site-header">
   <div class="nav">
-
-    <a
-      class="logo"
-      href="#"
-    >
-      WJ <span>IMPORTS</span>
-    </a>
-
-
-    <nav>
-
-      <a href="#inicio">
-        Início
-      </a>
-
-      <a href="#categorias">
-        Categorias
-      </a>
-
-      <a href="#produtos">
-        Produtos
-      </a>
-
-      <a href="#frete">
-        Frete
-      </a>
-
-      <a href="#contato">
-        Contato
-      </a>
-
+    <a class="logo" href="#inicio">WJ <span>IMPORTS</span></a>
+    <nav aria-label="Navegação principal">
+      <a href="#inicio">Início</a><a href="#categorias">Categorias</a>
+      <a href="#produtos">Produtos</a><a href="#frete">Frete</a><a href="#contato">Contato</a>
     </nav>
-
-
-    <button
-      class="cart-btn"
-      onclick="openCart()"
-    >
-
-      Carrinho
-
-      <b id="cartCount">
-        0
-      </b>
-
-    </button>
-
+    <button class="cart-btn" type="button" onclick="openCart()">Carrinho <b id="cartCount">0</b></button>
   </div>
-
 </header>
 
-
-
-<!-- =========================
-     CONTEÚDO
-========================= -->
-
 <main>
-
-
-<!-- =========================
-     HERO
-========================= -->
-
-<section
-  class="hero"
-  id="inicio"
->
-
-  <div class="hero-content">
-
-    <span class="eyebrow">
-      WJ IMPORTS
-    </span>
-
-
-    <h1>
-      Tecnologia, segurança e estilo em um só lugar.
-    </h1>
-
-
-    <p>
-      Eletrônicos, câmeras de segurança,
-      relógios digitais e perfumes importados.
-    </p>
-
-
-    <div class="actions">
-
-      <a
-        class="btn primary"
-        href="#produtos"
-      >
-        Comprar agora
-      </a>
-
-
-      <a
-        class="btn"
-        href="#categorias"
-      >
-        Ver categorias
-      </a>
-
+  <section class="hero" id="inicio">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <span class="eyebrow">WJ IMPORTS • PERFUMES IMPORTADOS</span>
+      <h1>Seu perfume. Seu estilo. <em>Sua presença.</em></h1>
+      <p>Encontre perfumes importados, kits e produtos selecionados com uma experiência de compra simples, rápida e segura.</p>
+      <div class="actions">
+        <a class="btn primary" href="#produtos">Ver produtos</a>
+        <a class="btn" href="#frete">Calcular frete</a>
+      </div>
+      <div class="hero-points">
+        <span>✓ Catálogo atualizado</span><span>✓ Envio para todo o Brasil</span><span>✓ Atendimento pelo WhatsApp</span>
+      </div>
     </div>
+  </section>
 
-  </div>
-
-</section>
-
-
-
-<!-- =========================
-     CATEGORIAS
-========================= -->
-
-<section id="categorias">
-
-  <div class="section-head">
-
-    <div>
-
-      <h2>
-        Categorias
-      </h2>
-
-      <p>
-        Encontre seu produto rapidamente.
-      </p>
-
+  <section id="categorias">
+    <div class="section-head">
+      <div><span class="eyebrow">EXPLORE</span><h2>Categorias</h2><p>Escolha uma categoria e encontre seu próximo produto.</p></div>
     </div>
+    <div class="categories" id="categoryGrid"></div>
+  </section>
 
-  </div>
-
-
-  <div
-    class="categories"
-    id="categoryGrid"
-  ></div>
-
-</section>
-
-
-
-<!-- =========================
-     PRODUTOS
-========================= -->
-
-<section id="produtos">
-
-  <div class="section-head">
-
-    <div>
-
-      <h2>
-        Produtos
-      </h2>
-
-      <p id="resultText">
-        Confira nossos produtos.
-      </p>
-
+  <section id="produtos">
+    <div class="section-head">
+      <div><span class="eyebrow">CATÁLOGO</span><h2>Produtos</h2><p id="resultText">Confira nossos produtos.</p></div>
     </div>
-
-  </div>
-
-
-  <div class="filters">
-
-    <input
-      id="search"
-      type="search"
-      placeholder="Buscar produto..."
-      oninput="renderProducts()"
-    >
-
-
-    <select
-      id="categoryFilter"
-      onchange="renderProducts()"
-    >
-
-      <option value="Todos">
-        Todas as categorias
-      </option>
-
-    </select>
-
-
-    <select
-      id="sort"
-      onchange="renderProducts()"
-    >
-
-      <option value="default">
-        Ordenar
-      </option>
-
-      <option value="low">
-        Menor preço
-      </option>
-
-      <option value="high">
-        Maior preço
-      </option>
-
-      <option value="name">
-        Nome
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <div
-    class="products"
-    id="productGrid"
-  ></div>
-
-</section>
-
-
-
-<!-- =========================
-     FRETE
-========================= -->
-
-<section id="frete">
-
-  <div class="shipping-box">
-
-    <div>
-
-      <span class="eyebrow">
-        ENTREGA
-      </span>
-
-
-      <h2>
-        Calcule seu frete
-      </h2>
-
-
-      <p>
-        Informe o CEP para simular opções de entrega.
-      </p>
-
+    <div class="filters">
+      <label class="search-wrap"><span>Buscar</span><input id="search" type="search" placeholder="Ex.: Yara, Asad, kit..." oninput="renderProducts()"></label>
+      <label><span>Categoria</span><select id="categoryFilter" onchange="renderProducts()"><option value="Todos">Todas</option></select></label>
+      <label><span>Ordenar</span><select id="sort" onchange="renderProducts()">
+        <option value="default">Mais relevantes</option><option value="low">Menor preço</option><option value="high">Maior preço</option><option value="name">Nome</option>
+      </select></label>
     </div>
+    <div class="products" id="productGrid"></div>
+  </section>
 
-
-    <form
-      onsubmit="calculateShipping(event)"
-    >
-
-      <input
-        id="cep"
-        inputmode="numeric"
-        maxlength="9"
-        placeholder="00000-000"
-        required
-      >
-
-
-      <button
-        class="btn primary"
-        type="submit"
-      >
-        Calcular frete
-      </button>
-
-    </form>
-
-
-    <div
-      id="shippingResult"
-      class="shipping-result"
-    >
-      Digite um CEP para ver a simulação.
+  <section id="frete">
+    <div class="shipping-box">
+      <div class="shipping-copy">
+        <span class="eyebrow">ENTREGA</span>
+        <h2>Calcule seu frete em tempo real</h2>
+        <p>Informe o CEP de destino. A cotação é feita pela integração da WJ Imports com a SuperFrete.</p>
+        <div class="shipping-note"><strong>Frete real</strong><span>Preço e prazo retornados pela SuperFrete conforme origem, peso e dimensões do pacote.</span></div>
+      </div>
+      <form id="shippingForm" class="shipping-form" onsubmit="calculateShipping(event)">
+        <label><span>CEP de destino</span><input id="cep" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" required></label>
+        <div class="package-fields">
+          <label><span>Qtd.</span><input id="shippingQty" type="number" min="1" max="20" value="1"></label>
+          <label><span>Peso (kg)</span><input id="shippingWeight" type="number" min="0.1" step="0.01" value="0.30"></label>
+        </div>
+        <button id="shippingButton" class="btn primary full" type="submit">Calcular frete</button>
+      </form>
+      <div id="shippingResult" class="shipping-result" aria-live="polite">
+        <div class="shipping-empty"><span class="shipping-icon">⌁</span><div><strong>Digite seu CEP</strong><p>As opções de envio aparecerão aqui.</p></div></div>
+      </div>
     </div>
+  </section>
 
-  </div>
-
-</section>
-
-
-
-<!-- =========================
-     CONTATO
-========================= -->
-
-<section id="contato">
-
-  <div class="section-head">
-
-    <div>
-
-      <h2>
-        Fale conosco
-      </h2>
-
-      <p>
-        Configure seus contatos reais nesta área.
-      </p>
-
+  <section id="contato">
+    <div class="section-head">
+      <div><span class="eyebrow">ATENDIMENTO</span><h2>Fale com a WJ Imports</h2><p>Precisa de disponibilidade, encomenda ou ajuda para escolher seu perfume?</p></div>
     </div>
-
-  </div>
-
-
-  <div class="contact-grid">
-
-    <div>
-
-      <b>
-        WhatsApp
-      </b>
-
-      <span>
-        Seu número comercial
-      </span>
-
+    <div class="contact-grid">
+      <a href="https://wa.me/5513996905523" target="_blank" rel="noopener"><span class="contact-icon">WA</span><b>WhatsApp</b><small>Falar com a loja</small></a>
+      <div><span class="contact-icon">@</span><b>Instagram</b><small>@seuinstagram</small></div>
+      <a href="mailto:contato@wjimports.com.br"><span class="contact-icon">@</span><b>E-mail</b><small>contato@wjimports.com.br</small></a>
     </div>
-
-
-    <div>
-
-      <b>
-        Instagram
-      </b>
-
-      <span>
-        @seuinstagram
-      </span>
-
-    </div>
-
-
-    <div>
-
-      <b>
-        E-mail
-      </b>
-
-      <span>
-        contato@wjimports.com.br
-      </span>
-
-    </div>
-
-  </div>
-
-</section>
-
-
+  </section>
 </main>
 
-
-
-<!-- =========================
-     CARRINHO
-========================= -->
-
-<div
-  id="cartModal"
-  class="modal"
->
-
-  <div class="modal-card">
-
-    <button
-      class="close"
-      onclick="closeCart()"
-    >
-      ×
-    </button>
-
-
-    <h2>
-      Seu carrinho
-    </h2>
-
-
+<div id="cartModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+  <div class="modal-card cart-card">
+    <button class="close" type="button" onclick="closeCart()" aria-label="Fechar">×</button>
+    <span class="eyebrow">SEU PEDIDO</span><h2 id="cartTitle">Carrinho</h2>
     <div id="cartItems"></div>
-
-
-    <div class="cart-total">
-
-      Total:
-
-      <strong id="cartTotal">
-        R$ 0,00
-      </strong>
-
-    </div>
-
-
-    <button
-      class="btn primary full"
-      onclick="checkout()"
-    >
-      Finalizar pedido pelo WhatsApp
-    </button>
-
+    <div class="cart-total"><span>Total</span><strong id="cartTotal">R$ 0,00</strong></div>
+    <button class="btn primary full" type="button" onclick="checkout()">Finalizar pelo WhatsApp</button>
   </div>
-
 </div>
 
-
-
-<!-- =========================
-     MODAL DA IMAGEM
-     
-     IMPORTANTE:
-     Existe apenas UM imageModal
-========================= -->
-
-<div
-  id="imageModal"
-  class="image-modal"
-  onclick="closeImage(event)"
->
-
-
-  <!-- BOTÃO X -->
-
-  <button
-    class="close-image"
-    onclick="closeImage(event)"
-    aria-label="Fechar imagem"
-  >
-    ×
-  </button>
-
-
-  <!-- SETA ESQUERDA -->
-
-  <button
-    class="modal-arrow modal-arrow-left"
-    onclick="changeModalImage(-1, event)"
-    aria-label="Imagem anterior"
-  >
-    ‹
-  </button>
-
-
-  <!-- IMAGEM GRANDE -->
-
-  <img
-    id="modalImage"
-    class="modal-image"
-    src=""
-    alt="Imagem ampliada"
-    onclick="event.stopPropagation()"
-  >
-
-
-  <!-- SETA DIREITA -->
-
-  <button
-    class="modal-arrow modal-arrow-right"
-    onclick="changeModalImage(1, event)"
-    aria-label="Próxima imagem"
-  >
-    ›
-  </button>
-
-
-  <!-- CONTADOR -->
-
-  <div
-    id="modalImageCounter"
-    class="modal-image-counter"
-  >
-    1/1
-  </div>
-
-
+<div id="imageModal" class="image-modal" onclick="closeImage(event)">
+  <button class="close-image" type="button" onclick="closeImage(event)" aria-label="Fechar">×</button>
+  <button class="modal-arrow modal-arrow-left" type="button" onclick="changeModalImage(-1,event)" aria-label="Imagem anterior">‹</button>
+  <img id="modalImage" class="modal-image" src="" alt="Imagem ampliada" onclick="event.stopPropagation()">
+  <button class="modal-arrow modal-arrow-right" type="button" onclick="changeModalImage(1,event)" aria-label="Próxima imagem">›</button>
+  <div id="modalImageCounter" class="modal-image-counter">1/1</div>
 </div>
 
-
-
-<!-- =========================
-     TOAST
-========================= -->
-
-<div id="toast"></div>
-
-
-
-<!-- =========================
-     FOOTER
-========================= -->
-
-<footer>
-
-  <p>
-    © 2026 WJ Imports — Todos os direitos reservados.
-  </p>
-
-</footer>
-
-
-
+<div id="toast" role="status"></div>
+<footer><p>© 2026 WJ Imports — Todos os direitos reservados.</p></footer>
 <script src="script.js"></script>
-
 </body>
-
 </html>
