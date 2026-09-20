@@ -1,0 +1,9 @@
+{
+  "name": "wj-imports",
+  "version": "1.0.0",
+  "description": "Site WJ Imports com calculadora de frete SuperFrete",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
