@@ -182,10 +182,13 @@ const products = [
 
 ];
 
-const SHIPPING_CONFIG = { height: 10, width: 15, length: 20, defaultWeight: 0.30 };
-let cart = JSON.parse(localStorage.getItem("wjCart") || "[]");
-let modalProductId = null;
-let modalImageIndex = 0;
+const SHIPPING_CONFIG = {
+  apiUrl: "https://site-wjimports.onrender.com/",
+  height: 10,
+  width: 15,
+  length: 20,
+  defaultWeight: 0.30
+};
 
 const cats = [...new Set(products.map(p => p.cat))];
 const categoryGrid = document.getElementById("categoryGrid");
@@ -358,36 +361,109 @@ async function calculateShipping(event) {
   result.innerHTML = `<div class="shipping-loading"><span></span><p>Consultando opções de envio...</p></div>`;
 
   try {
-    const response = await fetch("/api/frete", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({cep,quantity:qty,weight,height:SHIPPING_CONFIG.height,width:SHIPPING_CONFIG.width,length:SHIPPING_CONFIG.length})
-    });
+
+   const response = await fetch( 
+  `${SHIPPING_CONFIG.apiUrl}/api/frete`, 
+  { 
+    method: "POST", 
+
+    headers: { 
+      "Content-Type": "application/json" 
+    }, 
+
+    body: JSON.stringify({ 
+      cep, 
+      quantity: qty, 
+      weight, 
+      height: SHIPPING_CONFIG.height, 
+      width: SHIPPING_CONFIG.width, 
+      length: SHIPPING_CONFIG.length 
+    }) 
+  } 
+);
+
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Não foi possível calcular o frete.");
-    const rates = Array.isArray(data.rates) ? data.rates : [];
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Não foi possível calcular o frete."
+      );
+    }
+
+    const rates = Array.isArray(data.rates)
+      ? data.rates
+      : [];
 
     if (!rates.length) {
-      result.innerHTML = `<div class="shipping-empty"><strong>Nenhuma opção disponível.</strong><p>Confira o CEP ou tente novamente.</p></div>`;
+
+      result.innerHTML = `
+        <div class="shipping-empty">
+          <strong>Nenhuma opção disponível.</strong>
+          <p>Confira o CEP ou tente novamente.</p>
+        </div>
+      `;
+
       return;
     }
 
     result.innerHTML = `
-      <div class="shipping-results-head"><div><span class="eyebrow">OPÇÕES DE ENVIO</span><h3>Para ${formatCep(cep)}</h3></div><small>SuperFrete</small></div>
+      <div class="shipping-results-head">
+        <div>
+          <span class="eyebrow">OPÇÕES DE ENVIO</span>
+          <h3>Para ${formatCep(cep)}</h3>
+        </div>
+
+        <small>SuperFrete</small>
+      </div>
+
       <div class="shipping-options">
+
         ${rates.map(rate => `
           <div class="shipping-option">
-            <div><strong>${escapeHtml(rate.name || rate.service || "Envio")}</strong><span>${formatDelivery(rate)}</span></div>
-            <strong class="shipping-price">${money(rate.price)}</strong>
+
+            <div>
+              <strong>
+                ${escapeHtml(
+                  rate.name ||
+                  rate.service ||
+                  "Envio"
+                )}
+              </strong>
+
+              <span>
+                ${formatDelivery(rate)}
+              </span>
+            </div>
+
+            <strong class="shipping-price">
+              ${money(rate.price)}
+            </strong>
+
           </div>
         `).join("")}
-      </div>`;
+
+      </div>
+    `;
+
   } catch (error) {
+
     console.error(error);
-    result.innerHTML = `<div class="shipping-error"><strong>Não foi possível calcular agora.</strong><p>${escapeHtml(error.message)}</p><small>Confira as variáveis da SuperFrete no servidor.</small></div>`;
+
+    result.innerHTML = `
+      <div class="shipping-error">
+        <strong>Não foi possível calcular agora.</strong>
+        <p>${escapeHtml(error.message)}</p>
+        <small>
+          Tente novamente em alguns instantes.
+        </small>
+      </div>
+    `;
+
   } finally {
+
     button.disabled = false;
     button.textContent = "Calcular frete";
+
   }
 }
 function formatDelivery(rate) {
