@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>WJ Imports | Loja Online</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+  <div class="nav">
+
+    <a
+      class="logo"
+      href="#"
+    >
+      WJ <span>IMPORTS</span>
+    </a>
+
+
+    <nav>
+
+      <a href="#inicio">
+        Início
+      </a>
+
+      <a href="#categorias">
+        Categorias
+      </a>
+
+      <a href="#produtos">
+        Produtos
+      </a>
+
+      <a href="#frete">
+        Frete
+      </a>
+
+      <a href="#contato">
+        Contato
+      </a>
+
+    </nav>
+
+
+    <button
+      class="cart-btn"
+      onclick="openCart()"
+    >
+
+      Carrinho
+
+      <b id="cartCount">
+        0
+      </b>
+
+    </button>
+
+  </div>
+
+</header>
+
+
+
+<!-- =========================
+     CONTEÚDO
+========================= -->
+
+<main>
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section
+  class="hero"
+  id="inicio"
+>
+
+  <div class="hero-content">
+
+    <span class="eyebrow">
+      WJ IMPORTS
+    </span>
+
+
+    <h1>
+      Tecnologia, segurança e estilo em um só lugar.
+    </h1>
+
+
+    <p>
+      Eletrônicos, câmeras de segurança,
+      relógios digitais e perfumes importados.
+    </p>
+
+
+    <div class="actions">
+
+      <a
+        class="btn primary"
+        href="#produtos"
+      >
+        Comprar agora
+      </a>
+
+
+      <a
+        class="btn"
+        href="#categorias"
+      >
+        Ver categorias
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================
+     CATEGORIAS
+========================= -->
+
+<section id="categorias">
+
+  <div class="section-head">
+
+    <div>
+
+      <h2>
+        Categorias
+      </h2>
+
+      <p>
+        Encontre seu produto rapidamente.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="categories"
+    id="categoryGrid"
+  ></div>
+
+</section>
+
+
+
+<!-- =========================
+     PRODUTOS
+========================= -->
+
+<section id="produtos">
+
+  <div class="section-head">
+
+    <div>
+
+      <h2>
+        Produtos
+      </h2>
+
+      <p id="resultText">
+        Confira nossos produtos.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="filters">
+
+    <input
+      id="search"
+      type="search"
+      placeholder="Buscar produto..."
+      oninput="renderProducts()"
+    >
+
+
+    <select
+      id="categoryFilter"
+      onchange="renderProducts()"
+    >
+
+      <option value="Todos">
+        Todas as categorias
+      </option>
+
+    </select>
+
+
+    <select
+      id="sort"
+      onchange="renderProducts()"
+    >
+
+      <option value="default">
+        Ordenar
+      </option>
+
+      <option value="low">
+        Menor preço
+      </option>
+
+      <option value="high">
+        Maior preço
+      </option>
+
+      <option value="name">
+        Nome
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div
+    class="products"
+    id="productGrid"
+  ></div>
+
+</section>
+
+
+
+<!-- =========================
+     FRETE
+========================= -->
+
+<section id="frete">
+
+  <div class="shipping-box">
+
+    <div>
+
+      <span class="eyebrow">
+        ENTREGA
+      </span>
+
+
+      <h2>
+        Calcule seu frete
+      </h2>
+
+
+      <p>
+        Informe o CEP para simular opções de entrega.
+      </p>
+
+    </div>
+
+
+    <form
+      onsubmit="calculateShipping(event)"
+    >
+
+      <input
+        id="cep"
+        inputmode="numeric"
+        maxlength="9"
+        placeholder="00000-000"
+        required
+      >
+
+
+      <button
+        class="btn primary"
+        type="submit"
+      >
+        Calcular frete
+      </button>
+
+    </form>
+
+
+    <div
+      id="shippingResult"
+      class="shipping-result"
+    >
+      Digite um CEP para ver a simulação.
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================
+     CONTATO
+========================= -->
+
+<section id="contato">
+
+  <div class="section-head">
+
+    <div>
+
+      <h2>
+        Fale conosco
+      </h2>
+
+      <p>
+        Configure seus contatos reais nesta área.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="contact-grid">
+
+    <div>
+
+      <b>
+        WhatsApp
+      </b>
+
+      <span>
+        Seu número comercial
+      </span>
+
+    </div>
+
+
+    <div>
+
+      <b>
+        Instagram
+      </b>
+
+      <span>
+        @seuinstagram
+      </span>
+
+    </div>
+
+
+    <div>
+
+      <b>
+        E-mail
+      </b>
+
+      <span>
+        contato@wjimports.com.br
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =========================
+     CARRINHO
+========================= -->
+
+<div
+  id="cartModal"
+  class="modal"
+>
+
+  <div class="modal-card">
+
+    <button
+      class="close"
+      onclick="closeCart()"
+    >
+      ×
+    </button>
+
+
+    <h2>
+      Seu carrinho
+    </h2>
+
+
+    <div id="cartItems"></div>
+
+
+    <div class="cart-total">
+
+      Total:
+
+      <strong id="cartTotal">
+        R$ 0,00
+      </strong>
+
+    </div>
+
+
+    <button
+      class="btn primary full"
+      onclick="checkout()"
+    >
+      Finalizar pedido pelo WhatsApp
+    </button>
+
+  </div>
+
+</div>
+
+
+
+<!-- =========================
+     MODAL DA IMAGEM
+     
+     IMPORTANTE:
+     Existe apenas UM imageModal
+========================= -->
+
+<div
+  id="imageModal"
+  class="image-modal"
+  onclick="closeImage(event)"
+>
+
+
+  <!-- BOTÃO X -->
+
+  <button
+    class="close-image"
+    onclick="closeImage(event)"
+    aria-label="Fechar imagem"
+  >
+    ×
+  </button>
+
+
+  <!-- SETA ESQUERDA -->
+
+  <button
+    class="modal-arrow modal-arrow-left"
+    onclick="changeModalImage(-1, event)"
+    aria-label="Imagem anterior"
+  >
+    ‹
+  </button>
+
+
+  <!-- IMAGEM GRANDE -->
+
+  <img
+    id="modalImage"
+    class="modal-image"
+    src=""
+    alt="Imagem ampliada"
+    onclick="event.stopPropagation()"
+  >
+
+
+  <!-- SETA DIREITA -->
+
+  <button
+    class="modal-arrow modal-arrow-right"
+    onclick="changeModalImage(1, event)"
+    aria-label="Próxima imagem"
+  >
+    ›
+  </button>
+
+
+  <!-- CONTADOR -->
+
+  <div
+    id="modalImageCounter"
+    class="modal-image-counter"
+  >
+    1/1
+  </div>
+
+
+</div>
+
+
+
+<!-- =========================
+     TOAST
+========================= -->
+
+<div id="toast"></div>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+  <p>
+    © 2026 WJ Imports — Todos os direitos reservados.
+  </p>
+
+</footer>
+
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
