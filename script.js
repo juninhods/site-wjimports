@@ -183,12 +183,15 @@ const products = [
 ];
 
 const SHIPPING_CONFIG = {
-  apiUrl: "https://site-wjimports.onrender.com/",
+  apiUrl: "https://site-wjimports.onrender.com",
   height: 10,
   width: 15,
   length: 20,
   defaultWeight: 0.30
 };
+
+let currentShippingRates = [];
+let selectedShipping = null;
 
 const cats = [...new Set(products.map(p => p.cat))];
 const categoryGrid = document.getElementById("categoryGrid");
@@ -339,54 +342,118 @@ function renderCart() {
 }
 function removeItem(index) { cart.splice(index,1); saveCart(); renderCart(); }
 function checkout() {
-  if (!cart.length) return toast("Seu carrinho está vazio.");
-  const total = cart.reduce((sum,p) => sum + Number(p.price || 0),0);
-  const text = ["Olá, WJ Imports! Quero fazer um pedido:","",...cart.map(p => `• ${p.name} — ${money(p.price)}`),"",`Total dos produtos: ${money(total)}`].join("\n");
-  window.open("https://wa.me/5513996905523?text=" + encodeURIComponent(text),"_blank");
+  if (!cart.length) {
+    return toast("Seu carrinho está vazio.");
+  }
+
+  if (!selectedShipping) {
+    return toast("Selecione uma opção de entrega.");
+  }
+
+  const total = cart.reduce(
+    (sum, p) => sum + Number(p.price || 0),
+    0
+  );
+
+  let shippingText = "";
+
+  if (selectedShipping.type === "combine") {
+    shippingText = "Combinar entrega — consultar disponibilidade";
+  } else {
+    shippingText =
+      `${selectedShipping.name} — ${money(selectedShipping.price)}` +
+      (selectedShipping.deliveryTime
+        ? ` — ${selectedShipping.deliveryTime} dia(s) útil(eis)`
+        : "");
+  }
+
+  const text = [
+    "Olá, WJ Imports! Quero fazer um pedido:",
+    "",
+    ...cart.map(
+      p => `• ${p.name} — ${money(p.price)}`
+    ),
+    "",
+    `Total dos produtos: ${money(total)}`,
+    "",
+    `Forma de entrega: ${shippingText}`
+  ].join("\n");
+
+  window.open(
+    "https://wa.me/5513996905523?text=" +
+    encodeURIComponent(text),
+    "_blank"
+  );
 }
 
 async function calculateShipping(event) {
   event.preventDefault();
+
   const input = document.getElementById("cep");
   const result = document.getElementById("shippingResult");
   const button = document.getElementById("shippingButton");
-  const cep = input.value.replace(/\D/g,"");
-  if (cep.length !== 8) return toast("Digite um CEP válido.");
 
-  const qty = Math.max(1, Number(document.getElementById("shippingQty").value || 1));
-  const weight = Math.max(0.1, Number(document.getElementById("shippingWeight").value || SHIPPING_CONFIG.defaultWeight));
+  const cep = input.value.replace(/\D/g, "");
+
+  if (cep.length !== 8) {
+    return toast("Digite um CEP válido.");
+  }
+
+  const qty = Math.max(
+    1,
+    Number(
+      document.getElementById("shippingQty").value || 1
+    )
+  );
+
+  const weight = Math.max(
+    0.1,
+    Number(
+      document.getElementById("shippingWeight").value ||
+      SHIPPING_CONFIG.defaultWeight
+    )
+  );
 
   button.disabled = true;
   button.textContent = "Calculando...";
-  result.innerHTML = `<div class="shipping-loading"><span></span><p>Consultando opções de envio...</p></div>`;
+
+  selectedShipping = null;
+  currentShippingRates = [];
+
+  result.innerHTML = `
+    <div class="shipping-loading">
+      <span></span>
+      <p>Consultando opções de envio...</p>
+    </div>
+  `;
 
   try {
+    const response = await fetch(
+      `${SHIPPING_CONFIG.apiUrl}/api/frete`,
+      {
+        method: "POST",
 
-   const response = await fetch( 
-  `${SHIPPING_CONFIG.apiUrl}/api/frete`, 
-  { 
-    method: "POST", 
+        headers: {
+          "Content-Type": "application/json"
+        },
 
-    headers: { 
-      "Content-Type": "application/json" 
-    }, 
-
-    body: JSON.stringify({ 
-      cep, 
-      quantity: qty, 
-      weight, 
-      height: SHIPPING_CONFIG.height, 
-      width: SHIPPING_CONFIG.width, 
-      length: SHIPPING_CONFIG.length 
-    }) 
-  } 
-);
+        body: JSON.stringify({
+          cep,
+          quantity: qty,
+          weight,
+          height: SHIPPING_CONFIG.height,
+          width: SHIPPING_CONFIG.width,
+          length: SHIPPING_CONFIG.length
+        })
+      }
+    );
 
     const data = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        data.error || "Não foi possível calcular o frete."
+        data.error ||
+        "Não foi possível calcular o frete."
       );
     }
 
@@ -394,12 +461,82 @@ async function calculateShipping(event) {
       ? data.rates
       : [];
 
-    if (!rates.length) {
+    currentShippingRates = rates;
 
+    /*
+      Identifica o nome da transportadora/serviço.
+      A SuperFrete pode retornar nomes diferentes
+      dependendo da cotação.
+    */
+    function getCarrierName(rate) {
+      const text = String(
+        rate.name ||
+        rate.service ||
+        ""
+      ).toLowerCase();
+
+      if (
+        text.includes("sedex")
+      ) {
+        return "SEDEX";
+      }
+
+      if (
+        text.includes("pac")
+      ) {
+        return "PAC";
+      }
+
+      if (
+        text.includes("jadlog")
+      ) {
+        return "Jadlog";
+      }
+
+      if (
+        text.includes("j&t") ||
+        text.includes("j&t express") ||
+        text.includes("jet")
+      ) {
+        return "J&T Express";
+      }
+
+      if (
+        text.includes("loggi")
+      ) {
+        return "Loggi";
+      }
+
+      return rate.name || "Envio";
+    }
+
+    if (!rates.length) {
       result.innerHTML = `
         <div class="shipping-empty">
-          <strong>Nenhuma opção disponível.</strong>
-          <p>Confira o CEP ou tente novamente.</p>
+          <strong>Nenhuma opção calculada.</strong>
+          <p>
+            Não encontramos uma cotação automática
+            para este CEP.
+          </p>
+
+          <label class="shipping-option shipping-combine">
+            <input
+              type="radio"
+              name="shippingOption"
+              onchange="selectCombineDelivery()"
+            >
+
+            <div>
+              <strong>Combinar entrega</strong>
+              <span>
+                Consulte as opções disponíveis pelo WhatsApp.
+              </span>
+            </div>
+
+            <strong class="shipping-price">
+              Consultar
+            </strong>
+          </label>
         </div>
       `;
 
@@ -409,39 +546,82 @@ async function calculateShipping(event) {
     result.innerHTML = `
       <div class="shipping-results-head">
         <div>
-          <span class="eyebrow">OPÇÕES DE ENVIO</span>
-          <h3>Para ${formatCep(cep)}</h3>
+          <span class="eyebrow">
+            OPÇÕES DE ENVIO
+          </span>
+
+          <h3>
+            Para ${formatCep(cep)}
+          </h3>
         </div>
 
-        <small>SuperFrete</small>
+        <small>
+          Cotação real
+        </small>
       </div>
 
       <div class="shipping-options">
 
-        ${rates.map(rate => `
-          <div class="shipping-option">
+        ${rates.map((rate, index) => {
 
-            <div>
-              <strong>
-                ${escapeHtml(
-                  rate.name ||
-                  rate.service ||
-                  "Envio"
-                )}
+          const carrier = getCarrierName(rate);
+
+          return `
+            <label class="shipping-option">
+              
+              <input
+                type="radio"
+                name="shippingOption"
+                onchange="selectShippingOption(${index})"
+              >
+
+              <div>
+                <strong>
+                  ${escapeHtml(carrier)}
+                </strong>
+
+                <span>
+                  ${formatDelivery(rate)}
+                </span>
+              </div>
+
+              <strong class="shipping-price">
+                ${money(rate.price)}
               </strong>
 
-              <span>
-                ${formatDelivery(rate)}
-              </span>
-            </div>
+            </label>
+          `;
 
-            <strong class="shipping-price">
-              ${money(rate.price)}
+        }).join("")}
+
+        <label class="shipping-option shipping-combine">
+
+          <input
+            type="radio"
+            name="shippingOption"
+            onchange="selectCombineDelivery()"
+          >
+
+          <div>
+            <strong>
+              Combinar entrega
             </strong>
 
+            <span>
+              Consulte outras opções pelo WhatsApp.
+            </span>
           </div>
-        `).join("")}
 
+          <strong class="shipping-price">
+            Consultar
+          </strong>
+
+        </label>
+
+      </div>
+
+      <div class="shipping-selected" id="shippingSelected">
+        Selecione uma opção de entrega acima.
       </div>
     `;
 
@@ -451,11 +631,19 @@ async function calculateShipping(event) {
 
     result.innerHTML = `
       <div class="shipping-error">
-        <strong>Não foi possível calcular agora.</strong>
-        <p>${escapeHtml(error.message)}</p>
+
+        <strong>
+          Não foi possível calcular agora.
+        </strong>
+
+        <p>
+          ${escapeHtml(error.message)}
+        </p>
+
         <small>
           Tente novamente em alguns instantes.
         </small>
+
       </div>
     `;
 
@@ -464,6 +652,67 @@ async function calculateShipping(event) {
     button.disabled = false;
     button.textContent = "Calcular frete";
 
+  }
+}
+
+function selectShippingOption(index) {
+  const rate = currentShippingRates[index];
+
+  if (!rate) return;
+
+  const name = rate.name || "Envio";
+
+  selectedShipping = {
+    type: "shipping",
+    name,
+    price: Number(rate.price || 0),
+    deliveryTime:
+      rate.deliveryTime ??
+      rate.delivery_time ??
+      rate.deadline ??
+      rate.deliveryDays ??
+      null
+  };
+
+  const selected = document.getElementById(
+    "shippingSelected"
+  );
+
+  if (selected) {
+    selected.innerHTML = `
+      <strong>
+        Entrega selecionada:
+      </strong>
+
+      ${escapeHtml(name)}
+      — ${money(selectedShipping.price)}
+    `;
+  }
+}
+
+
+function selectCombineDelivery() {
+
+  selectedShipping = {
+    type: "combine",
+    name: "Combinar entrega",
+    price: 0,
+    deliveryTime: null
+  };
+
+  const selected = document.getElementById(
+    "shippingSelected"
+  );
+
+  if (selected) {
+    selected.innerHTML = `
+      <strong>
+        Entrega selecionada:
+      </strong>
+
+      Combinar entrega
+      — consulte pelo WhatsApp
+    `;
   }
 }
 function formatDelivery(rate) {
