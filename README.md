@@ -1,14 +1,16 @@
-# WJ Imports — refatorado
+# WJ Imports — versão pronta para hospedagem
 
-### Render
-Start Command:
-`node server.js`
+## Render
+Start Command: `node server.js`
 
-Variáveis:
-- `SUPERFRETE_TOKEN`: token da sua conta SuperFrete.
-- `SUPERFRETE_ORIGIN_CEP`: CEP de origem da loja, somente números.
-- `SUPERFRETE_BASE_URL`: opcional; padrão `https://api.superfrete.com`.
+Variáveis obrigatórias:
+- `SUPERFRETE_TOKEN`
+- `SUPERFRETE_ORIGIN_CEP`
 
-O token fica no servidor e não é exposto no navegador. O frontend chama `/api/frete`, e o `server.js` faz a cotação autenticada.
+Opcional: `SUPERFRETE_BASE_URL` (padrão `https://api.superfrete.com`).
 
-O catálogo original foi preservado e os caminhos das imagens continuam apontando para `imgs/...`.
+O `server.js` serve o site e a pasta `imgs/` e mantém o token da SuperFrete somente no servidor.
+
+O checkout possui catálogo, filtros, carrinho, busca automática de endereço por CEP, preenchimento manual quando faltarem dados, cotação real via SuperFrete, opção de combinar entrega e resumo completo pelo WhatsApp.
+
+Mantenha a pasta `imgs/` no mesmo nível de `index.html`.

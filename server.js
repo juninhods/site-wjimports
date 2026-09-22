@@ -1,4 +1,6 @@
 const http = require("http");
+const fs = require("fs");
+const path = require("path");
 
 const PORT = Number(process.env.PORT || 10000);
 const HOST = "0.0.0.0";
@@ -12,6 +14,26 @@ const TOKEN = process.env.SUPERFRETE_TOKEN || "";
 const ORIGIN = String(
   process.env.SUPERFRETE_ORIGIN_CEP || ""
 ).replace(/\D/g, "");
+
+const PUBLIC_DIR = __dirname;
+const MIME = { ".html":"text/html; charset=utf-8", ".js":"application/javascript; charset=utf-8", ".css":"text/css; charset=utf-8", ".json":"application/json; charset=utf-8", ".jpg":"image/jpeg", ".jpeg":"image/jpeg", ".png":"image/png", ".webp":"image/webp", ".gif":"image/gif", ".svg":"image/svg+xml", ".ico":"image/x-icon", ".woff":"font/woff", ".woff2":"font/woff2" };
+
+function serveStatic(req, res) {
+  let requestPath;
+  try { requestPath = decodeURIComponent((req.url || "/").split("?")[0]); } catch { return false; }
+  if (requestPath === "/") requestPath = "/index.html";
+  const relative = path.posix.normalize(requestPath).replace(/^\/+/, "");
+  if (!relative || relative.startsWith("..")) return false;
+  const filePath = path.join(PUBLIC_DIR, relative);
+  if (!filePath.startsWith(PUBLIC_DIR + path.sep) && filePath !== PUBLIC_DIR) return false;
+  try {
+    if (!fs.statSync(filePath).isFile()) return false;
+    const type = MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream";
+    res.writeHead(200, { "Content-Type": type, "Cache-Control": "public, max-age=300" });
+    fs.createReadStream(filePath).pipe(res);
+    return true;
+  } catch { return false; }
+}
 
 // ===============================
 // RESPOSTA JSON
@@ -345,16 +367,12 @@ const server = http.createServer(
       }
 
       // =============================
-      // ROTA NÃO ENCONTRADA
+      // ARQUIVOS DO SITE
       // =============================
 
-      return send(
-        res,
-        404,
-        {
-          error: "Rota não encontrada."
-        }
-      );
+      if (req.method === "GET" && serveStatic(req, res)) return;
+
+      return send(res, 404, { error: "Rota não encontrada." });
 
     } catch (error) {
 

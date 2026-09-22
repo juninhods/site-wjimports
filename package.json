@@ -1,9 +1,8 @@
 {
   "name": "wj-imports",
-  "version": "1.0.0",
-  "description": "Site WJ Imports com calculadora de frete SuperFrete",
+  "version": "2.0.0",
+  "description": "WJ Imports - catalogo, carrinho, checkout e frete SuperFrete",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  }
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
 }
