@@ -15,36 +15,15 @@ const ORIGIN = String(
   process.env.SUPERFRETE_ORIGIN_CEP || ""
 ).replace(/\D/g, "");
 
-const PUBLIC_DIR = __dirname;
-const MIME = { ".html":"text/html; charset=utf-8", ".js":"application/javascript; charset=utf-8", ".css":"text/css; charset=utf-8", ".json":"application/json; charset=utf-8", ".jpg":"image/jpeg", ".jpeg":"image/jpeg", ".png":"image/png", ".webp":"image/webp", ".gif":"image/gif", ".svg":"image/svg+xml", ".ico":"image/x-icon", ".woff":"font/woff", ".woff2":"font/woff2" };
-
-function serveStatic(req, res) {
-  let requestPath;
-  try { requestPath = decodeURIComponent((req.url || "/").split("?")[0]); } catch { return false; }
-  if (requestPath === "/") requestPath = "/index.html";
-  const relative = path.posix.normalize(requestPath).replace(/^\/+/, "");
-  if (!relative || relative.startsWith("..")) return false;
-  const filePath = path.join(PUBLIC_DIR, relative);
-  if (!filePath.startsWith(PUBLIC_DIR + path.sep) && filePath !== PUBLIC_DIR) return false;
-  try {
-    if (!fs.statSync(filePath).isFile()) return false;
-    const type = MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream";
-    res.writeHead(200, { "Content-Type": type, "Cache-Control": "public, max-age=300" });
-    fs.createReadStream(filePath).pipe(res);
-    return true;
-  } catch { return false; }
-}
-
-// ===============================
+// =====================================================
 // RESPOSTA JSON
-// ===============================
+// =====================================================
 
 function send(res, status, data) {
   res.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
 
-    // CORS - permite o GitHub Pages acessar o Render
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type"
@@ -53,9 +32,9 @@ function send(res, status, data) {
   res.end(JSON.stringify(data));
 }
 
-// ===============================
+// =====================================================
 // LER JSON DA REQUISIÇÃO
-// ===============================
+// =====================================================
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -82,9 +61,9 @@ function readBody(req) {
   });
 }
 
-// ===============================
-// NORMALIZAR RESULTADO
-// ===============================
+// =====================================================
+// NORMALIZAR RESULTADO DA SUPERFRETE
+// =====================================================
 
 function normalize(rate) {
   const price = Number(
@@ -101,6 +80,7 @@ function normalize(rate) {
       rate?.id ??
       rate?.service_id ??
       rate?.serviceCode ??
+      rate?.code ??
       null,
 
     name:
@@ -108,7 +88,13 @@ function normalize(rate) {
       rate?.service ??
       rate?.service_name ??
       rate?.description ??
+      rate?.company?.name ??
       "Envio",
+
+    company:
+      rate?.company?.name ??
+      rate?.carrier?.name ??
+      "",
 
     price: Number.isFinite(price) ? price : 0,
 
@@ -119,49 +105,69 @@ function normalize(rate) {
       rate?.delivery_days ??
       rate?.deliveryDays ??
       rate?.days ??
+      rate?.delivery_range ??
       null
   };
 }
 
-// ===============================
+// =====================================================
 // CALCULAR FRETE
-// ===============================
+// =====================================================
 
 async function calculate(body) {
-  // Verifica token
+
+  // ---------------------------------------------------
+  // TOKEN
+  // ---------------------------------------------------
+
   if (!TOKEN) {
     throw new Error(
       "SUPERFRETE_TOKEN não configurado no Render."
     );
   }
 
-  // Verifica CEP de origem
+  // ---------------------------------------------------
+  // CEP ORIGEM
+  // ---------------------------------------------------
+
   if (ORIGIN.length !== 8) {
     throw new Error(
       "SUPERFRETE_ORIGIN_CEP não configurado corretamente no Render."
     );
   }
 
-  // CEP destino
+  // ---------------------------------------------------
+  // CEP DESTINO
+  // ---------------------------------------------------
+
   const cep = String(body.cep || "").replace(/\D/g, "");
 
   if (cep.length !== 8) {
     throw new Error("CEP de destino inválido.");
   }
 
-  // Quantidade
+  // ---------------------------------------------------
+  // QUANTIDADE
+  // ---------------------------------------------------
+
   const quantity = Math.max(
     1,
     Math.min(20, Number(body.quantity || 1))
   );
 
-  // Peso de uma camisa/pacote
+  // ---------------------------------------------------
+  // PESO
+  // ---------------------------------------------------
+
   const weight = Math.max(
     0.1,
     Number(body.weight || 0.3)
   );
 
-  // Dimensões
+  // ---------------------------------------------------
+  // DIMENSÕES
+  // ---------------------------------------------------
+
   const height = Math.max(
     1,
     Number(body.height || 10)
@@ -177,9 +183,9 @@ async function calculate(body) {
     Number(body.length || 20)
   );
 
-  // ===============================
-  // DADOS ENVIADOS PARA SUPERFRETE
-  // ===============================
+  // ---------------------------------------------------
+  // PAYLOAD
+  // ---------------------------------------------------
 
   const payload = {
     from: {
@@ -195,10 +201,19 @@ async function calculate(body) {
       height,
       width,
       length
-    }
+    },
+
+    // Solicita os serviços disponíveis.
+    // A SuperFrete retornará somente aqueles
+    // disponíveis para origem/destino/pacote.
+    services: "1,2,17,3,33,31"
   };
 
-  console.log("Calculando frete:", {
+  console.log("=================================");
+  console.log("CALCULANDO FRETE");
+  console.log("=================================");
+
+  console.log({
     origem: ORIGIN,
     destino: cep,
     quantidade: quantity,
@@ -210,9 +225,12 @@ async function calculate(body) {
     }
   });
 
-  // ===============================
+  console.log("Payload enviado:");
+  console.log(JSON.stringify(payload, null, 2));
+
+  // ---------------------------------------------------
   // CHAMADA SUPERFRETE
-  // ===============================
+  // ---------------------------------------------------
 
   const response = await fetch(
     `${BASE}/api/v0/calculator`,
@@ -230,55 +248,96 @@ async function calculate(body) {
     }
   );
 
-  const text = await response.text();
+  const responseText = await response.text();
+
+  console.log("HTTP SuperFrete:", response.status);
+
+  console.log("Resposta SuperFrete:");
+  console.log(responseText);
 
   let data;
 
   try {
-    data = JSON.parse(text);
+    data = JSON.parse(responseText);
   } catch {
     data = {
-      raw: text
+      raw: responseText
     };
   }
 
-  // ===============================
-  // ERRO DA SUPERFRETE
-  // ===============================
+  // ---------------------------------------------------
+  // ERRO SUPERFRETE
+  // ---------------------------------------------------
 
   if (!response.ok) {
+
     console.error(
-      "Erro SuperFrete:",
-      response.status,
+      "================================="
+    );
+
+    console.error(
+      "ERRO SUPERFRETE"
+    );
+
+    console.error(
+      "STATUS:",
+      response.status
+    );
+
+    console.error(
+      "RESPOSTA:",
       data
     );
 
-    throw new Error(
+    console.error(
+      "================================="
+    );
+
+    let mensagem =
       data?.message ||
       data?.error ||
       data?.errors?.[0]?.message ||
-      `SuperFrete retornou HTTP ${response.status}.`
-    );
+      data?.errors?.[0] ||
+      data?.detail ||
+      data?.details ||
+      `SuperFrete retornou HTTP ${response.status}.`;
+
+    if (typeof mensagem !== "string") {
+      mensagem = JSON.stringify(mensagem);
+    }
+
+    throw new Error(mensagem);
   }
 
-  // ===============================
+  // ---------------------------------------------------
   // LOCALIZAR SERVIÇOS
-  // ===============================
+  // ---------------------------------------------------
 
-  const raw =
-    Array.isArray(data)
-      ? data
-      : Array.isArray(data?.services)
-        ? data.services
-        : Array.isArray(data?.rates)
-          ? data.rates
-          : Array.isArray(data?.data)
-            ? data.data
-            : [];
+  let raw = [];
 
-  // ===============================
-  // NORMALIZAR SERVIÇOS
-  // ===============================
+  if (Array.isArray(data)) {
+    raw = data;
+  }
+
+  else if (Array.isArray(data?.services)) {
+    raw = data.services;
+  }
+
+  else if (Array.isArray(data?.rates)) {
+    raw = data.rates;
+  }
+
+  else if (Array.isArray(data?.data)) {
+    raw = data.data;
+  }
+
+  else if (Array.isArray(data?.results)) {
+    raw = data.results;
+  }
+
+  // ---------------------------------------------------
+  // NORMALIZAR
+  // ---------------------------------------------------
 
   const rates = raw
     .map(normalize)
@@ -289,32 +348,134 @@ async function calculate(body) {
     `Fretes encontrados: ${rates.length}`
   );
 
+  console.log(
+    JSON.stringify(rates, null, 2)
+  );
+
   return {
     rates
   };
 }
 
-// ===============================
+// =====================================================
+// SERVIR ARQUIVOS DO SITE
+// =====================================================
+
+function serveStatic(req, res) {
+
+  let requestedPath = req.url.split("?")[0];
+
+  if (requestedPath === "/") {
+    requestedPath = "/index.html";
+  }
+
+  // Segurança básica
+  const safePath = path
+    .normalize(requestedPath)
+    .replace(/^(\.\.[\/\\])+/, "");
+
+  const filePath = path.join(
+    __dirname,
+    safePath
+  );
+
+  if (!filePath.startsWith(__dirname)) {
+    res.writeHead(403);
+    return res.end("Forbidden");
+  }
+
+  fs.readFile(filePath, (error, data) => {
+
+    if (error) {
+      res.writeHead(404, {
+        "Content-Type": "text/plain; charset=utf-8"
+      });
+
+      return res.end("Arquivo não encontrado.");
+    }
+
+    const extension = path
+      .extname(filePath)
+      .toLowerCase();
+
+    const contentTypes = {
+
+      ".html":
+        "text/html; charset=utf-8",
+
+      ".css":
+        "text/css; charset=utf-8",
+
+      ".js":
+        "application/javascript; charset=utf-8",
+
+      ".json":
+        "application/json; charset=utf-8",
+
+      ".png":
+        "image/png",
+
+      ".jpg":
+        "image/jpeg",
+
+      ".jpeg":
+        "image/jpeg",
+
+      ".webp":
+        "image/webp",
+
+      ".gif":
+        "image/gif",
+
+      ".svg":
+        "image/svg+xml",
+
+      ".ico":
+        "image/x-icon",
+
+      ".woff":
+        "font/woff",
+
+      ".woff2":
+        "font/woff2"
+    };
+
+    res.writeHead(200, {
+      "Content-Type":
+        contentTypes[extension] ||
+        "application/octet-stream"
+    });
+
+    res.end(data);
+  });
+}
+
+// =====================================================
 // SERVIDOR
-// ===============================
+// =====================================================
 
 const server = http.createServer(
   async (req, res) => {
 
     try {
 
-      // =============================
+      // ------------------------------------------------
       // CORS PREFLIGHT
-      // =============================
+      // ------------------------------------------------
 
       if (req.method === "OPTIONS") {
 
         res.writeHead(204, {
-          "Access-Control-Allow-Origin": "*",
+
+          "Access-Control-Allow-Origin":
+            "*",
+
           "Access-Control-Allow-Methods":
             "POST, GET, OPTIONS",
+
           "Access-Control-Allow-Headers":
             "Content-Type",
+
           "Access-Control-Max-Age":
             "86400"
         });
@@ -322,18 +483,20 @@ const server = http.createServer(
         return res.end();
       }
 
-      // =============================
-      // CALCULAR FRETE
-      // =============================
+      // ------------------------------------------------
+      // API FRETE
+      // ------------------------------------------------
 
       if (
         req.method === "POST" &&
         req.url === "/api/frete"
       ) {
 
-        const body = await readBody(req);
+        const body =
+          await readBody(req);
 
-        const result = await calculate(body);
+        const result =
+          await calculate(body);
 
         return send(
           res,
@@ -342,9 +505,9 @@ const server = http.createServer(
         );
       }
 
-      // =============================
-      // TESTE DA API
-      // =============================
+      // ------------------------------------------------
+      // HEALTH
+      // ------------------------------------------------
 
       if (
         req.method === "GET" &&
@@ -366,19 +529,49 @@ const server = http.createServer(
         );
       }
 
-      // =============================
-      // ARQUIVOS DO SITE
-      // =============================
+      // ------------------------------------------------
+      // SITE
+      // ------------------------------------------------
 
-      if (req.method === "GET" && serveStatic(req, res)) return;
+      if (req.method === "GET") {
 
-      return send(res, 404, { error: "Rota não encontrada." });
+        return serveStatic(
+          req,
+          res
+        );
+      }
 
-    } catch (error) {
+      // ------------------------------------------------
+      // ROTA NÃO ENCONTRADA
+      // ------------------------------------------------
+
+      return send(
+        res,
+        404,
+        {
+          error:
+            "Rota não encontrada."
+        }
+      );
+
+    }
+
+    catch (error) {
 
       console.error(
-        "Erro no servidor:",
+        "================================="
+      );
+
+      console.error(
+        "ERRO NO SERVIDOR:"
+      );
+
+      console.error(
         error
+      );
+
+      console.error(
+        "================================="
       );
 
       return send(
@@ -394,9 +587,9 @@ const server = http.createServer(
   }
 );
 
-// ===============================
-// INICIAR SERVIDOR
-// ===============================
+// =====================================================
+// INICIAR
+// =====================================================
 
 server.listen(
   PORT,
@@ -417,7 +610,8 @@ server.listen(
 
     console.log(
       `CEP origem: ${
-        ORIGIN || "ausente"
+        ORIGIN ||
+        "ausente"
       }`
     );
   }
