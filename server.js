@@ -188,26 +188,20 @@ async function calculate(body) {
   // ---------------------------------------------------
 
   const payload = {
-    from: {
-      postal_code: ORIGIN
-    },
-
-    to: {
-      postal_code: cep
-    },
-
-    package: {
-      weight: weight * quantity,
-      height,
-      width,
-      length
-    },
-
-    // Solicita os serviços disponíveis.
-    // A SuperFrete retornará somente aqueles
-    // disponíveis para origem/destino/pacote.
-    services: "1,2,17,3,33,31"
-  };
+  from: {
+    postal_code: ORIGIN
+  },
+  to: {
+    postal_code: cep
+  },
+  package: {
+    weight: weight * quantity,
+    height,
+    width,
+    length
+  },
+  services: "1,2,17,3,33,31"
+};
 
   console.log("=================================");
   console.log("CALCULANDO FRETE");
