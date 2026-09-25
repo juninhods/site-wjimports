@@ -192,17 +192,14 @@ const products = [
 ===================================================== */
 
 const SHIPPING_CONFIG = {
-
-  apiUrl: "",
-
+  apiUrl: "https://site-wjimports.onrender.com",
   height: 10,
-
   width: 15,
+  length: 20,
 
-  length: 20
-
+  // 500 g por produto
+  defaultWeight: 0.50
 };
-
 
 /*
    Peso padrão de cada produto.

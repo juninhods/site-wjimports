@@ -5,35 +5,37 @@ const path = require("path");
 const PORT = Number(process.env.PORT || 10000);
 const HOST = "0.0.0.0";
 
-const BASE = (
+const SUPERFRETE_BASE_URL = (
   process.env.SUPERFRETE_BASE_URL ||
   "https://api.superfrete.com"
 ).replace(/\/$/, "");
 
-const TOKEN = process.env.SUPERFRETE_TOKEN || "";
+const SUPERFRETE_TOKEN =
+  process.env.SUPERFRETE_TOKEN || "";
 
-const ORIGIN = String(
-  process.env.SUPERFRETE_ORIGIN_CEP || "11900000"
-).replace(/\D/g, "");
+// CEP FIXO DA WJ IMPORTS
+const ORIGIN_CEP = "11900000";
 
-const DEFAULT_WEIGHT = 0.5; // 500 g por produto
+// PESO PADRÃO POR PRODUTO
+const DEFAULT_PRODUCT_WEIGHT = 0.5;
 
-const DEFAULT_DIMENSIONS = {
+// DIMENSÕES PADRÃO
+const DEFAULT_PACKAGE = {
   height: 10,
   width: 15,
   length: 20
 };
 
 // =====================================================
-// RESPOSTA JSON
+// JSON
 // =====================================================
 
-function send(res, status, data) {
+function sendJson(res, status, data) {
   res.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type"
   });
 
@@ -41,10 +43,10 @@ function send(res, status, data) {
 }
 
 // =====================================================
-// LER JSON
+// BODY
 // =====================================================
 
-function readBody(req) {
+function readJsonBody(req) {
   return new Promise((resolve, reject) => {
     let body = "";
 
@@ -52,14 +54,19 @@ function readBody(req) {
       body += chunk;
 
       if (body.length > 100000) {
-        reject(new Error("Payload muito grande."));
+        reject(new Error("Dados enviados são muito grandes."));
         req.destroy();
       }
     });
 
     req.on("end", () => {
+      if (!body.trim()) {
+        resolve({});
+        return;
+      }
+
       try {
-        resolve(JSON.parse(body || "{}"));
+        resolve(JSON.parse(body));
       } catch {
         reject(new Error("JSON inválido."));
       }
@@ -70,18 +77,55 @@ function readBody(req) {
 }
 
 // =====================================================
-// NORMALIZAR RESULTADO
+// NÚMERO
 // =====================================================
 
-function normalize(rate) {
-  const price = Number(
+function numberOr(value, fallback) {
+  const number = Number(value);
+
+  return Number.isFinite(number)
+    ? number
+    : fallback;
+}
+
+// =====================================================
+// NORMALIZAÇÃO DOS FRETES
+// =====================================================
+
+function normalizeRate(rate) {
+  const price = numberOr(
     rate?.price ??
     rate?.total_price ??
     rate?.amount ??
     rate?.cost ??
-    rate?.value ??
+    rate?.value,
     0
   );
+
+  const name =
+    rate?.name ||
+    rate?.service_name ||
+    rate?.service ||
+    rate?.description ||
+    rate?.company?.name ||
+    "Envio";
+
+  const company =
+    rate?.company?.name ||
+    rate?.company_name ||
+    rate?.carrier?.name ||
+    rate?.carrier ||
+    "";
+
+  const deliveryTime =
+    rate?.delivery_time ??
+    rate?.deliveryTime ??
+    rate?.deadline ??
+    rate?.delivery_days ??
+    rate?.deliveryDays ??
+    rate?.days ??
+    rate?.delivery_range ??
+    "";
 
   return {
     id:
@@ -91,79 +135,98 @@ function normalize(rate) {
       rate?.code ??
       null,
 
-    name:
-      rate?.name ??
-      rate?.service ??
-      rate?.service_name ??
-      rate?.description ??
-      rate?.company?.name ??
-      "Envio",
+    name: String(name),
 
-    company:
-      rate?.company?.name ??
-      rate?.carrier?.name ??
-      "",
+    company: String(company),
 
-    price: Number.isFinite(price) ? price : 0,
+    price,
 
-    deliveryTime:
-      rate?.delivery_time ??
-      rate?.deliveryTime ??
-      rate?.deadline ??
-      rate?.delivery_days ??
-      rate?.deliveryDays ??
-      rate?.days ??
-      rate?.delivery_range ??
-      null
+    deliveryTime: String(deliveryTime)
   };
+}
+
+// =====================================================
+// EXTRAIR SERVIÇOS
+// =====================================================
+
+function extractServices(data) {
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (Array.isArray(data?.services)) {
+    return data.services;
+  }
+
+  if (Array.isArray(data?.rates)) {
+    return data.rates;
+  }
+
+  if (Array.isArray(data?.data)) {
+    return data.data;
+  }
+
+  if (Array.isArray(data?.results)) {
+    return data.results;
+  }
+
+  return [];
 }
 
 // =====================================================
 // CALCULAR FRETE
 // =====================================================
 
-async function calculate(body) {
-  if (!TOKEN) {
+async function calculateShipping(body) {
+  if (!SUPERFRETE_TOKEN) {
     throw new Error(
-      "SUPERFRETE_TOKEN não configurado no Render."
+      "SUPERFRETE_TOKEN não configurado no servidor."
     );
   }
 
-  if (ORIGIN.length !== 8) {
-    throw new Error(
-      "SUPERFRETE_ORIGIN_CEP não configurado corretamente."
-    );
-  }
-
-  // CEP destino
-  const cep = String(
-    body.cep || body.cepDestino || ""
+  const cepDestino = String(
+    body.cep ||
+    body.cepDestino ||
+    body.destinationCep ||
+    ""
   ).replace(/\D/g, "");
 
-  if (cep.length !== 8) {
-    throw new Error("CEP de destino inválido.");
+  if (cepDestino.length !== 8) {
+    throw new Error(
+      "CEP de destino inválido."
+    );
   }
 
-  // Quantidade
+  // ===================================================
+  // QUANTIDADE
+  // ===================================================
+
   const quantity = Math.max(
     1,
     Math.min(
       20,
-      Number(body.quantity || 1)
+      Math.floor(
+        numberOr(body.quantity, 1)
+      )
     )
   );
 
   // ===================================================
   // PESO
-  // 500 g POR PRODUTO
+  //
+  // 500 GRAMAS POR PRODUTO
   // ===================================================
 
-  const weight = Math.max(
-    0.1,
-    Number(body.weight || DEFAULT_WEIGHT)
+  const weightPerProduct = Math.max(
+    DEFAULT_PRODUCT_WEIGHT,
+    numberOr(
+      body.weight,
+      DEFAULT_PRODUCT_WEIGHT
+    )
   );
 
-  const totalWeight = weight * quantity;
+  const totalWeight =
+    weightPerProduct * quantity;
 
   // ===================================================
   // DIMENSÕES
@@ -171,25 +234,25 @@ async function calculate(body) {
 
   const height = Math.max(
     1,
-    Number(
-      body.height ||
-      DEFAULT_DIMENSIONS.height
+    numberOr(
+      body.height,
+      DEFAULT_PACKAGE.height
     )
   );
 
   const width = Math.max(
     1,
-    Number(
-      body.width ||
-      DEFAULT_DIMENSIONS.width
+    numberOr(
+      body.width,
+      DEFAULT_PACKAGE.width
     )
   );
 
   const length = Math.max(
     1,
-    Number(
-      body.length ||
-      DEFAULT_DIMENSIONS.length
+    numberOr(
+      body.length,
+      DEFAULT_PACKAGE.length
     )
   );
 
@@ -199,12 +262,14 @@ async function calculate(body) {
 
   const payload = {
     from: {
-      postal_code: ORIGIN
+      postal_code: ORIGIN_CEP
     },
 
     to: {
-      postal_code: cep
+      postal_code: cepDestino
     },
+
+    services: "1,2,17,3,33,31",
 
     package: {
       weight: totalWeight,
@@ -212,8 +277,6 @@ async function calculate(body) {
       width,
       length
     },
-
-    services: "1,2,17,3,33,31",
 
     options: {
       own_hand: false,
@@ -224,42 +287,52 @@ async function calculate(body) {
   };
 
   console.log("");
-  console.log("=================================");
-  console.log("WJ IMPORTS - CÁLCULO DE FRETE");
-  console.log("=================================");
+  console.log("==========================================");
+  console.log("WJ IMPORTS - SUPERFRETE");
+  console.log("==========================================");
 
-  console.log({
-    origem: ORIGIN,
-    destino: cep,
-    quantidade: quantity,
-    pesoPorProduto: `${weight} kg`,
-    pesoTotal: `${totalWeight} kg`,
-    dimensoes: {
-      height,
-      width,
-      length
-    }
-  });
-
-  console.log("Payload enviado:");
+  console.log("Origem:", ORIGIN_CEP);
+  console.log("Destino:", cepDestino);
+  console.log("Quantidade:", quantity);
   console.log(
+    "Peso por produto:",
+    `${weightPerProduct} kg`
+  );
+  console.log(
+    "Peso total:",
+    `${totalWeight} kg`
+  );
+
+  console.log(
+    "Dimensões:",
+    `${height} x ${width} x ${length} cm`
+  );
+
+  console.log(
+    "Payload:",
     JSON.stringify(payload, null, 2)
   );
 
   // ===================================================
-  // SUPERFRETE
+  // CHAMADA SUPERFRETE
   // ===================================================
 
   const response = await fetch(
-    `${BASE}/api/v0/calculator`,
+    `${SUPERFRETE_BASE_URL}/api/v0/calculator`,
     {
       method: "POST",
 
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "WJ-Imports/1.0",
-        Authorization: `Bearer ${TOKEN}`
+
+        "Content-Type":
+          "application/json",
+
+        "User-Agent":
+          "WJ-Imports/1.0",
+
+        Authorization:
+          `Bearer ${SUPERFRETE_TOKEN}`
       },
 
       body: JSON.stringify(payload)
@@ -275,15 +348,15 @@ async function calculate(body) {
   );
 
   console.log(
-    "Resposta SuperFrete:"
+    "Resposta:",
+    responseText
   );
-
-  console.log(responseText);
 
   let data;
 
   try {
-    data = JSON.parse(responseText);
+    data =
+      JSON.parse(responseText);
   } catch {
     data = {
       raw: responseText
@@ -291,68 +364,65 @@ async function calculate(body) {
   }
 
   // ===================================================
-  // ERRO
+  // ERRO SUPERFRETE
   // ===================================================
 
   if (!response.ok) {
-    console.error(
-      "Erro SuperFrete:",
-      response.status,
-      data
-    );
-
     let message =
       data?.message ||
       data?.error ||
+      data?.detail ||
       data?.errors?.[0]?.message ||
       data?.errors?.[0] ||
-      data?.detail ||
-      data?.details ||
       `SuperFrete retornou HTTP ${response.status}.`;
 
-    if (typeof message !== "string") {
-      message = JSON.stringify(message);
+    if (
+      typeof message !== "string"
+    ) {
+      message =
+        JSON.stringify(message);
     }
 
     throw new Error(message);
   }
 
   // ===================================================
-  // LOCALIZAR SERVIÇOS
+  // SERVIÇOS
   // ===================================================
 
-  let raw = [];
-
-  if (Array.isArray(data)) {
-    raw = data;
-  } else if (Array.isArray(data?.services)) {
-    raw = data.services;
-  } else if (Array.isArray(data?.rates)) {
-    raw = data.rates;
-  } else if (Array.isArray(data?.data)) {
-    raw = data.data;
-  } else if (Array.isArray(data?.results)) {
-    raw = data.results;
-  }
+  const services =
+    extractServices(data);
 
   // ===================================================
-  // NORMALIZAR
+  // NORMALIZA
   // ===================================================
 
-  const rates = raw
-    .map(normalize)
-    .filter(rate => rate.price > 0)
+  const rates = services
+    .map(normalizeRate)
+    .filter(rate =>
+      rate.price > 0
+    )
     .sort(
-      (a, b) => a.price - b.price
+      (a, b) =>
+        a.price - b.price
     );
 
   console.log(
-    `Fretes encontrados: ${rates.length}`
+    "Fretes encontrados:",
+    rates.length
   );
 
   console.log(
-    JSON.stringify(rates, null, 2)
+    JSON.stringify(
+      rates,
+      null,
+      2
+    )
   );
+
+  // ===================================================
+  // RESPOSTA PARA O FRONTEND
+  // ===================================================
 
   return {
     rates
@@ -360,101 +430,130 @@ async function calculate(body) {
 }
 
 // =====================================================
-// SERVIR SITE
+// ARQUIVOS DO SITE
+// =====================================================
+
+function getContentType(filePath) {
+  const extension =
+    path
+      .extname(filePath)
+      .toLowerCase();
+
+  const types = {
+    ".html":
+      "text/html; charset=utf-8",
+
+    ".css":
+      "text/css; charset=utf-8",
+
+    ".js":
+      "application/javascript; charset=utf-8",
+
+    ".json":
+      "application/json; charset=utf-8",
+
+    ".png":
+      "image/png",
+
+    ".jpg":
+      "image/jpeg",
+
+    ".jpeg":
+      "image/jpeg",
+
+    ".webp":
+      "image/webp",
+
+    ".gif":
+      "image/gif",
+
+    ".svg":
+      "image/svg+xml",
+
+    ".ico":
+      "image/x-icon",
+
+    ".woff":
+      "font/woff",
+
+    ".woff2":
+      "font/woff2"
+  };
+
+  return (
+    types[extension] ||
+    "application/octet-stream"
+  );
+}
+
+// =====================================================
+// STATIC
 // =====================================================
 
 function serveStatic(req, res) {
   let requestedPath =
     req.url.split("?")[0];
 
-  if (requestedPath === "/") {
-    requestedPath = "/index.html";
+  if (
+    requestedPath === "/" ||
+    requestedPath === ""
+  ) {
+    requestedPath =
+      "/index.html";
   }
 
-  const safePath = path
-    .normalize(requestedPath)
-    .replace(
-      /^(\.\.[\/\\])+/,
+  const relativePath =
+    requestedPath.replace(
+      /^\/+/,
       ""
     );
 
-  const filePath = path.join(
-    __dirname,
-    safePath
-  );
+  const filePath =
+    path.join(
+      __dirname,
+      relativePath
+    );
+
+  const normalized =
+    path.normalize(filePath);
 
   if (
-    !filePath.startsWith(__dirname)
+    !normalized.startsWith(
+      path.resolve(__dirname)
+    )
   ) {
     res.writeHead(403);
-    return res.end("Forbidden");
+    return res.end(
+      "Acesso negado."
+    );
   }
 
   fs.readFile(
-    filePath,
+    normalized,
     (error, data) => {
       if (error) {
-        res.writeHead(404, {
-          "Content-Type":
-            "text/plain; charset=utf-8"
-        });
+        res.writeHead(
+          404,
+          {
+            "Content-Type":
+              "text/plain; charset=utf-8"
+          }
+        );
 
         return res.end(
           "Arquivo não encontrado."
         );
       }
 
-      const extension =
-        path
-          .extname(filePath)
-          .toLowerCase();
-
-      const contentTypes = {
-        ".html":
-          "text/html; charset=utf-8",
-
-        ".css":
-          "text/css; charset=utf-8",
-
-        ".js":
-          "application/javascript; charset=utf-8",
-
-        ".json":
-          "application/json; charset=utf-8",
-
-        ".png":
-          "image/png",
-
-        ".jpg":
-          "image/jpeg",
-
-        ".jpeg":
-          "image/jpeg",
-
-        ".webp":
-          "image/webp",
-
-        ".gif":
-          "image/gif",
-
-        ".svg":
-          "image/svg+xml",
-
-        ".ico":
-          "image/x-icon",
-
-        ".woff":
-          "font/woff",
-
-        ".woff2":
-          "font/woff2"
-      };
-
-      res.writeHead(200, {
-        "Content-Type":
-          contentTypes[extension] ||
-          "application/octet-stream"
-      });
+      res.writeHead(
+        200,
+        {
+          "Content-Type":
+            getContentType(
+              normalized
+            )
+        }
+      );
 
       res.end(data);
     }
@@ -465,116 +564,144 @@ function serveStatic(req, res) {
 // SERVIDOR
 // =====================================================
 
-const server = http.createServer(
-  async (req, res) => {
-    try {
+const server =
+  http.createServer(
+    async (req, res) => {
 
-      // CORS
-      if (req.method === "OPTIONS") {
-        res.writeHead(204, {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods":
-            "POST, GET, OPTIONS",
-          "Access-Control-Allow-Headers":
-            "Content-Type",
-          "Access-Control-Max-Age":
-            "86400"
-        });
+      try {
 
-        return res.end();
-      }
+        // CORS
+        if (
+          req.method ===
+          "OPTIONS"
+        ) {
+          res.writeHead(
+            204,
+            {
+              "Access-Control-Allow-Origin":
+                "*",
 
-      // API FRETE
-      if (
-        req.method === "POST" &&
-        req.url === "/api/frete"
-      ) {
-        const body =
-          await readBody(req);
+              "Access-Control-Allow-Methods":
+                "GET, POST, OPTIONS",
 
-        const result =
-          await calculate(body);
+              "Access-Control-Allow-Headers":
+                "Content-Type",
 
-        return send(
+              "Access-Control-Max-Age":
+                "86400"
+            }
+          );
+
+          return res.end();
+        }
+
+        // =============================================
+        // HEALTH
+        // =============================================
+
+        if (
+          req.method === "GET" &&
+          req.url === "/api/health"
+        ) {
+          return sendJson(
+            res,
+            200,
+            {
+              ok: true,
+
+              superfreteConfigured:
+                Boolean(
+                  SUPERFRETE_TOKEN
+                ),
+
+              originCep:
+                ORIGIN_CEP,
+
+              defaultProductWeight:
+                "0.5 kg",
+
+              packageDimensions:
+                DEFAULT_PACKAGE
+            }
+          );
+        }
+
+        // =============================================
+        // FRETE
+        // =============================================
+
+        if (
+          req.method === "POST" &&
+          req.url === "/api/frete"
+        ) {
+          const body =
+            await readJsonBody(req);
+
+          const result =
+            await calculateShipping(
+              body
+            );
+
+          return sendJson(
+            res,
+            200,
+            result
+          );
+        }
+
+        // =============================================
+        // SITE
+        // =============================================
+
+        if (
+          req.method === "GET"
+        ) {
+          return serveStatic(
+            req,
+            res
+          );
+        }
+
+        return sendJson(
           res,
-          200,
-          result
-        );
-      }
-
-      // HEALTH
-      if (
-        req.method === "GET" &&
-        req.url === "/api/health"
-      ) {
-        return send(
-          res,
-          200,
+          404,
           {
-            ok: true,
+            error:
+              "Rota não encontrada."
+          }
+        );
 
-            superfreteConfigured:
-              Boolean(
-                TOKEN &&
-                ORIGIN.length === 8
-              ),
+      } catch (error) {
 
-            originCep: ORIGIN,
+        console.error("");
+        console.error(
+          "=========================================="
+        );
+        console.error(
+          "ERRO WJ IMPORTS"
+        );
+        console.error(
+          "=========================================="
+        );
+        console.error(
+          error
+        );
 
-            defaultProductWeight:
-              "0.5 kg"
+        return sendJson(
+          res,
+          500,
+          {
+            error:
+              error?.message ||
+              "Não foi possível calcular o frete."
           }
         );
       }
-
-      // SITE
-      if (req.method === "GET") {
-        return serveStatic(
-          req,
-          res
-        );
-      }
-
-      return send(
-        res,
-        404,
-        {
-          error:
-            "Rota não encontrada."
-        }
-      );
-
-    } catch (error) {
-
-      console.error(
-        "================================="
-      );
-
-      console.error(
-        "ERRO NO SERVIDOR:"
-      );
-
-      console.error(error);
-
-      console.error(
-        "================================="
-      );
-
-      return send(
-        res,
-        500,
-        {
-          error:
-            error.message ||
-            "Erro interno do servidor."
-        }
-      );
     }
-  }
-);
+  );
 
 // =====================================================
-// INICIAR
+// START
 // =====================================================
 
 server.listen(
@@ -584,33 +711,35 @@ server.listen(
 
     console.log("");
     console.log(
-      "================================="
+      "=========================================="
     );
 
     console.log(
-      `WJ Imports rodando em ${HOST}:${PORT}`
+      `WJ Imports API rodando em ${HOST}:${PORT}`
     );
 
     console.log(
       `SuperFrete: ${
-        TOKEN
+        SUPERFRETE_TOKEN
           ? "configurado"
-          : "AUSENTE"
+          : "NÃO CONFIGURADO"
       }`
     );
 
     console.log(
-      `CEP origem: ${
-        ORIGIN || "AUSENTE"
-      }`
+      `CEP origem: ${ORIGIN_CEP}`
     );
 
     console.log(
-      "Peso padrão por produto: 500 g"
+      "Peso padrão: 500 g por produto"
     );
 
     console.log(
-      "================================="
+      "Dimensões: 10 x 15 x 20 cm"
+    );
+
+    console.log(
+      "=========================================="
     );
   }
 );
