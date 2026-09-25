@@ -23,7 +23,6 @@ function send(res, status, data) {
   res.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
-
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type"
@@ -188,20 +187,21 @@ async function calculate(body) {
   // ---------------------------------------------------
 
   const payload = {
-  from: {
-    postal_code: ORIGIN
-  },
-  to: {
-    postal_code: cep
-  },
-  package: {
-    weight: weight * quantity,
-    height,
-    width,
-    length
-  },
-  services: "1,2,17,3,33,31"
-};
+    from: {
+      postal_code: ORIGIN
+    },
+
+    to: {
+      postal_code: cep
+    },
+
+    package: {
+      weight: weight * quantity,
+      height,
+      width,
+      length
+    }
+  };
 
   console.log("=================================");
   console.log("CALCULANDO FRETE");
@@ -218,6 +218,10 @@ async function calculate(body) {
       length
     }
   });
+
+  console.log(
+    "Serviços: sem filtro — solicitando todas as opções disponíveis"
+  );
 
   console.log("Payload enviado:");
   console.log(JSON.stringify(payload, null, 2));
