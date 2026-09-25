@@ -1470,3 +1470,114 @@ footer {
     font-size: 14px !important;
   }
 }
+
+/* =====================================================
+   ENTREGA A COMBINAR
+   ===================================================== */
+
+#combinarFields {
+  margin-top: 22px;
+  padding: 22px;
+  background: linear-gradient(145deg, #151515, #0d0d0d);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 16px;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Título */
+#combinarFields label {
+  display: block;
+  margin-bottom: 10px;
+  color: #d4af37;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+/* Campo de local */
+#localEntrega {
+  display: block;
+  width: 100%;
+  min-height: 58px;
+  box-sizing: border-box;
+
+  padding: 15px 17px;
+
+  background: #0b0b0b;
+  color: #ffffff;
+
+  border: 1px solid #3a3a3a;
+  border-radius: 11px;
+
+  outline: none;
+
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+/* Placeholder */
+#localEntrega::placeholder {
+  color: #777;
+  opacity: 1;
+}
+
+/* Quando clicar no campo */
+#localEntrega:focus {
+  border-color: #d4af37;
+  background: #101010;
+
+  box-shadow:
+    0 0 0 3px rgba(212, 175, 55, 0.12),
+    0 5px 18px rgba(0, 0, 0, 0.3);
+}
+
+/* Texto de ajuda */
+#combinarFields .help {
+  margin: 10px 2px 0;
+
+  color: #999;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Pequeno destaque no texto */
+#combinarFields .help::before {
+  content: "📍 ";
+}
+
+/* =====================================================
+   RESPONSIVO
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+  #combinarFields {
+    padding: 18px;
+    margin-top: 18px;
+    border-radius: 14px;
+  }
+
+  #localEntrega {
+    min-height: 54px;
+    padding: 13px 14px;
+    font-size: 14px;
+  }
+
+  #combinarFields label {
+    font-size: 12px;
+  }
+
+  #combinarFields .help {
+    font-size: 11px;
+  }
+}
