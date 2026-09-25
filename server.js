@@ -13,7 +13,7 @@ const BASE = (
 const TOKEN = process.env.SUPERFRETE_TOKEN || "";
 
 const ORIGIN = String(
-  process.env.SUPERFRETE_ORIGIN_CEP || "11940000"
+  process.env.SUPERFRETE_ORIGIN_CEP || "11900000"
 ).replace(/\D/g, "");
 
 const DEFAULT_WEIGHT = 0.5; // 500 g por produto
