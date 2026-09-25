@@ -364,13 +364,26 @@
         </div>
 
         <div id="combineDeliveryBox" class="combine-delivery-box" style="display:none;">
-          <span class="eyebrow">ENTREGA A COMBINAR</span>
-          <h3>Onde podemos combinar a entrega?</h3>
-          <p>Informe um local, bairro ou ponto de referência. A loja confirma os detalhes pelo WhatsApp.</p>
-          <label>
-            <span>Local para combinar</span>
-            <textarea id="combineLocation" rows="4" placeholder="Ex.: Centro de Registro, Praça Beira Rio, ou outro local..." ></textarea>
-          </label>
+          <div class="combine-delivery-header">
+            <span class="eyebrow">ENTREGA A COMBINAR</span>
+            <h3>Onde podemos combinar a entrega?</h3>
+            <p>Informe um local, bairro ou ponto de referência. A loja confirma os detalhes pelo WhatsApp.</p>
+          </div>
+
+          <div class="combine-location-field">
+            <label for="combineLocation">
+              <span>📍 Local para combinar a entrega</span>
+            </label>
+
+            <textarea
+              id="combineLocation"
+              rows="4"
+              placeholder="Ex.: Centro de Registro-SP
+Praça Beira Rio, ou outro ponto de referência..."
+            ></textarea>
+
+            <small>💬 Informe uma praça, bairro, avenida, comércio ou outro ponto fácil de encontrar.</small>
+          </div>
         </div>
 
         <div class="checkout-actions">

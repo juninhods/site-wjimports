@@ -1050,25 +1050,12 @@ section {
   z-index: 2002;
   width: 56px;
   height: 56px;
-  padding: 0;
-  margin: 0;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: rgba(0, 0, 0, 0.7);
   color: #fff;
   font-size: 42px;
-  font-family: Arial, sans-serif;
-  font-weight: 400;
-  line-height: 1;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transform: translateY(-50%);
-  appearance: none;
-  -webkit-appearance: none;
-  box-sizing: border-box;
-  cursor: pointer;
 }
 
 .modal-arrow:hover {
@@ -1235,9 +1222,7 @@ footer {
   .modal-arrow {
     width: 42px;
     height: 42px;
-    padding: 0;
     font-size: 31px;
-    line-height: 1;
   }
 
   .modal-arrow-left {
@@ -1275,309 +1260,178 @@ footer {
 }
 
 
-
 /* ============================================================
-   FRETE — OPÇÕES E COMBINAR ENTREGA
+   ENTREGA A COMBINAR — VISUAL WJ IMPORTS
 ============================================================ */
 
-.shipping-options {
-  display: grid;
-  gap: 10px;
-  margin-top: 12px;
+.combine-delivery-box {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 18px;
+  padding: 24px;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.11), transparent 42%),
+    linear-gradient(145deg, #17140d, #0c0c0c);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
 }
+
+.combine-delivery-header {
+  margin-bottom: 20px;
+}
+
+.combine-delivery-header .eyebrow {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--gold-light);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2.8px;
+}
+
+.combine-delivery-header h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.combine-delivery-header p {
+  max-width: 680px;
+  margin: 8px 0 0;
+  color: #a4a4a4;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.combine-location-field {
+  width: 100%;
+}
+
+.combine-location-field label {
+  display: block;
+  margin-bottom: 9px;
+  color: #f1f1f1;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.combine-location-field textarea#combineLocation {
+  display: block;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 112px;
+  box-sizing: border-box;
+  padding: 15px 16px;
+  resize: vertical;
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+  outline: none;
+  background: #080808;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.55;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.combine-location-field textarea#combineLocation::placeholder {
+  color: #696969;
+  opacity: 1;
+}
+
+.combine-location-field textarea#combineLocation:hover {
+  border-color: rgba(212, 175, 55, 0.45);
+}
+
+.combine-location-field textarea#combineLocation:focus {
+  border-color: var(--gold-light);
+  background: #0d0d0d;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.10), 0 8px 22px rgba(0, 0, 0, 0.28);
+}
+
+.combine-location-field small {
+  display: block;
+  margin-top: 9px;
+  color: #777;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   OPÇÕES DE FRETE — CARTÕES
+============================================================ */
 
 .shipping-option {
-  position: relative;
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
-  align-items: center;
-  gap: 12px;
-  min-height: 72px;
-  padding: 14px 16px;
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 14px;
-  background: linear-gradient(145deg, #141414, #0b0b0b);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
-  transition: border-color .2s ease, background .2s ease, transform .2s ease, box-shadow .2s ease;
-  cursor: pointer;
+  grid-template-columns: 1fr auto;
+  padding: 15px 16px;
+  border-radius: 12px;
+  border-color: rgba(255, 255, 255, 0.10);
+  background: linear-gradient(145deg, #111111, #0b0b0b);
 }
 
-.shipping-option:hover {
-  border-color: rgba(212,175,55,.45);
-  background: linear-gradient(145deg, #19160d, #0c0c0c);
-  transform: translateY(-1px);
-}
-
+.shipping-option:hover,
 .shipping-option:has(input:checked) {
-  border-color: var(--gold);
-  background: linear-gradient(145deg, rgba(212,175,55,.13), rgba(12,12,12,.98));
-  box-shadow: 0 0 0 1px rgba(212,175,55,.12), 0 8px 22px rgba(0,0,0,.22);
-}
-
-.shipping-option input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.shipping-radio {
-  width: 18px;
-  height: 18px;
-  flex: 0 0 18px;
-  box-sizing: border-box;
-  border: 2px solid #666;
-  border-radius: 50%;
-  position: relative;
-}
-
-.shipping-option input:checked + .shipping-radio {
-  border-color: var(--gold-light);
-}
-
-.shipping-option input:checked + .shipping-radio::after {
-  content: "";
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  top: 3px;
-  left: 3px;
-  border-radius: 50%;
-  background: var(--gold-light);
+  border-color: rgba(212, 175, 55, 0.72);
+  background: linear-gradient(145deg, rgba(212, 175, 55, 0.10), #0d0d0d);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
 }
 
 .shipping-option-content {
-  min-width: 0;
+  grid-column: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
+  min-width: 0;
 }
 
 .shipping-option-content > div {
-  min-width: 0;
   display: grid;
-  gap: 5px;
+  gap: 4px;
 }
 
 .shipping-option-content strong {
   color: #fff;
-  font-size: 15px;
-  line-height: 1.2;
+  font-size: 14px;
 }
 
 .shipping-option-content span {
-  color: #8f8f8f;
+  color: #888;
   font-size: 12px;
-  line-height: 1.35;
 }
 
 .shipping-price {
-  color: var(--gold-light) !important;
-  font-size: 16px !important;
-  font-weight: 800;
-  white-space: nowrap;
-  text-align: right;
-}
-
-/* Campo para o local quando a entrega for combinada */
-.combine-location,
-.shipping-combine-location {
-  display: grid;
-  gap: 7px;
-  margin-top: 10px;
-  padding: 14px;
-  border: 1px solid rgba(212,175,55,.22);
-  border-radius: 14px;
-  background: linear-gradient(145deg, rgba(212,175,55,.07), rgba(255,255,255,.025));
-}
-
-.combine-location label,
-.shipping-combine-location label {
-  display: grid;
-  gap: 6px;
-}
-
-.combine-location label > span,
-.shipping-combine-location label > span {
-  color: #aaa;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .8px;
-}
-
-.combine-location input,
-.combine-location textarea,
-.shipping-combine-location input,
-.shipping-combine-location textarea {
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 46px;
-  padding: 12px 13px;
-  border: 1px solid #343434;
-  border-radius: 10px;
-  outline: none;
-  resize: vertical;
-  background: #0b0b0b;
-  color: #fff;
-  font: inherit;
-  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
-}
-
-.combine-location textarea,
-.shipping-combine-location textarea {
-  min-height: 82px;
-}
-
-.combine-location input::placeholder,
-.combine-location textarea::placeholder,
-.shipping-combine-location input::placeholder,
-.shipping-combine-location textarea::placeholder {
-  color: #666;
-}
-
-.combine-location input:focus,
-.combine-location textarea:focus,
-.shipping-combine-location input:focus,
-.shipping-combine-location textarea:focus {
-  border-color: rgba(212,175,55,.72);
-  background: #0e0e0e;
-  box-shadow: 0 0 0 3px rgba(212,175,55,.08);
-}
-
-.combine-location small,
-.shipping-combine-location small {
-  color: #777;
-  font-size: 11px;
-  line-height: 1.4;
-}
-
-@media (max-width: 700px) {
-  .shipping-option {
-    min-height: 68px;
-    padding: 12px;
-  }
-
-  .shipping-option-content {
-    gap: 10px;
-  }
-
-  .shipping-option-content strong {
-    font-size: 14px;
-  }
-
-  .shipping-price {
-    font-size: 14px !important;
-  }
-}
-
-/* =====================================================
-   ENTREGA A COMBINAR
-   ===================================================== */
-
-#combinarFields {
-  margin-top: 22px;
-  padding: 22px;
-  background: linear-gradient(145deg, #151515, #0d0d0d);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 16px;
-  box-shadow:
-    0 8px 25px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
-}
-
-/* Título */
-#combinarFields label {
-  display: block;
-  margin-bottom: 10px;
-  color: #d4af37;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-}
-
-/* Campo de local */
-#localEntrega {
-  display: block;
-  width: 100%;
-  min-height: 58px;
-  box-sizing: border-box;
-
-  padding: 15px 17px;
-
-  background: #0b0b0b;
-  color: #ffffff;
-
-  border: 1px solid #3a3a3a;
-  border-radius: 11px;
-
-  outline: none;
-
-  font-family: inherit;
+  color: var(--gold-light);
   font-size: 15px;
-  line-height: 1.5;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+  font-weight: 900;
+  white-space: nowrap;
 }
-
-/* Placeholder */
-#localEntrega::placeholder {
-  color: #777;
-  opacity: 1;
-}
-
-/* Quando clicar no campo */
-#localEntrega:focus {
-  border-color: #d4af37;
-  background: #101010;
-
-  box-shadow:
-    0 0 0 3px rgba(212, 175, 55, 0.12),
-    0 5px 18px rgba(0, 0, 0, 0.3);
-}
-
-/* Texto de ajuda */
-#combinarFields .help {
-  margin: 10px 2px 0;
-
-  color: #999;
-
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-/* Pequeno destaque no texto */
-#combinarFields .help::before {
-  content: "📍 ";
-}
-
-/* =====================================================
-   RESPONSIVO
-   ===================================================== */
 
 @media (max-width: 600px) {
-
-  #combinarFields {
+  .combine-delivery-box {
     padding: 18px;
-    margin-top: 18px;
     border-radius: 14px;
   }
 
-  #localEntrega {
-    min-height: 54px;
-    padding: 13px 14px;
+  .combine-delivery-header h3 {
+    font-size: 17px;
+  }
+
+  .combine-location-field textarea#combineLocation {
+    min-height: 105px;
     font-size: 14px;
   }
 
-  #combinarFields label {
-    font-size: 12px;
+  .shipping-option-content {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
   }
 
-  #combinarFields .help {
-    font-size: 11px;
+  .shipping-price {
+    font-size: 14px;
   }
 }
